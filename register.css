@@ -8,6 +8,7 @@
     --border-color: #E5E0D8;
 }
 
+
 * {
     box-sizing: border-box;
 }
@@ -22,22 +23,21 @@ body {
 
 .register-container {
     width: 100%;
-    max-width: 420px;
+    max-width: 500px;
     margin: 30px auto;
-    padding: 24px 20px;
-    background-color: var(--card-background);
+    padding: 35px;
+    background-color: white;
     border: 1px solid var(--border-color);
     border-top: 4px solid var(--accent-yellow);
     border-radius: 12px;
-    box-shadow: 0 0 0 8px rgba(229, 224, 216, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
+
 
 .register-container h1 {
     color: var(--primary-blue);
     text-align: center;
     margin-top: 0;
-    font-size: 22px;
-    font-weight: 500;
 }
 
 .register-container > p {
@@ -47,7 +47,7 @@ body {
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .form-group label {
@@ -69,10 +69,6 @@ body {
     outline-offset: 1px;
 }
 
-.form-group input::placeholder {
-    color: #94A3B8;
-}
-
 .register-container button {
     width: 100%;
     padding: 12px;
@@ -90,7 +86,6 @@ body {
 }
 
 .login-link {
-    text-align: center;
     margin-top: 20px;
     font-size: 14px;
 }
