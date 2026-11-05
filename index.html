@@ -22,7 +22,8 @@
         <a href="index.html" class="active" aria-current="page">Home</a>
         <a href="#community-map">Community Map</a>
         <a href="#announcements">Announcements</a>
-        <a href="login.php">Login</a>
+        <a href="#login-modal" id="open-login">Login</a>
+
     </nav>
 </header>
 
@@ -196,8 +197,140 @@
     </div>
 </footer>
 
-    
- 
-    <script src="script.js"></script>
+<script src="script.js"></script>
+
+<div id="login-modal" class="modal" hidden>
+
+    <div class="modal-content">
+
+        <button type="button"
+                class="close-modal"
+                aria-label="Close login">
+            &times;
+        </button>
+
+        <h2 id="login-title">Resident Login</h2>
+        <p>Sign in to report incidents and track your requests.</p>
+
+        <form id="login-form" method="POST">
+
+            <div class="form-group">
+                <label for="modal-email">Email Address</label>
+                <input type="email"
+                       id="modal-email"
+                       name="email"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="modal-password">Password</label>
+                <input type="password"
+                       id="modal-password"
+                       name="password"
+                       required>
+            </div>
+
+            <button type="submit" class="modal-submit">
+                Login
+            </button>
+
+        </form>
+
+        <p class="modal-switch">
+            Don't have an account?
+            <a href="#register-modal" id="switch-to-register">
+                Register here
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- REGISTRATION MODAL -->
+<div id="register-modal" class="modal" hidden>
+
+    <div class="modal-content">
+
+        <button type="button"
+                class="close-modal"
+                aria-label="Close registration">
+            &times;
+        </button>
+
+        <h2 id="register-title">Create Resident Account</h2>
+        <p>Register to report incidents and track your requests.</p>
+
+        <form id="register-form" method="POST">
+
+            <div class="form-group">
+                <label for="reg-first-name">First Name</label>
+                <input type="text" id="reg-first-name"
+                       name="first_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="reg-last-name">Last Name</label>
+                <input type="text" id="reg-last-name"
+                       name="last_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="reg-email">Email Address</label>
+                <input type="email" id="reg-email"
+                       name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="reg-contact">Contact Number</label>
+                <input type="tel" id="reg-contact"
+                       name="contact_number"
+                       placeholder="09XXXXXXXXX"
+                       pattern="09[0-9]{9}"
+                       maxlength="11" required>
+            </div>
+
+            <div class="form-group">
+                <label for="reg-address">Barangay Address</label>
+                <input type="text" id="reg-address"
+                       name="address"
+                       placeholder="House no., street, subdivision"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="reg-password">Password</label>
+                <input type="password" id="reg-password"
+                       name="password" minlength="8" required>
+            </div>
+
+            <div class="form-group">
+                <label for="reg-confirm-password">Confirm Password</label>
+                <input type="password" id="reg-confirm-password"
+                       name="confirm_password"
+                       minlength="8" required>
+            </div>
+
+            <button type="submit" class="modal-submit">
+                Create Account
+            </button>
+
+        </form>
+
+        <p class="modal-switch">
+            Already have an account?
+            <a href="#login-modal" id="switch-to-login">
+                Login here
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+<script src="modal.js"></script>
+
+
 </body>
 </html>

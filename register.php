@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resident Registration | Barangay Chrysanthemum</title>
-    <link rel="stylesheet" href="register.css">
+    <link rel="stylesheet" href="register.css?v=<?= filemtime(__DIR__ . '/register.css') ?>">
 </head>
 <body>
 
