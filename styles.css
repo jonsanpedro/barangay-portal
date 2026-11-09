@@ -124,7 +124,12 @@ nav a.active {
 }
 
 .btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 46px;
+    border: 2px solid transparent;
     padding: 12px 20px;
     margin: 0;
     text-decoration: none;
@@ -135,8 +140,15 @@ nav a.active {
                 color 0.2s ease;
 }
 
+.btn-primary {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: #FFFFFF;
+}
+
 .btn-primary:hover {
     background-color: var(--primary-blue-dark);
+    border-color: var(--primary-blue-dark);
 }
 
 .btn-secondary {

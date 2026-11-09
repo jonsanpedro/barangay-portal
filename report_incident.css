@@ -1,0 +1,192 @@
+:root {
+    --primary-blue: #27358B;
+    --primary-blue-dark: #1C286D;
+    --accent-yellow: #F4B83F;
+    --background: #FAFAF7;
+    --text-dark: #121B2C;
+    --text-muted: #64748B;
+    --border-color: #CBD5E1;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 35px 20px;
+    background: var(--background);
+    color: var(--text-dark);
+    font-family: Arial, sans-serif;
+}
+
+/* Main form container */
+.report-container {
+    max-width: 850px;
+    margin: 0 auto;
+    background: white;
+    padding: 35px;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+/* Page header */
+.report-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #F1F5F9;
+}
+
+.report-header h1 {
+    margin: 0 0 12px;
+    color: var(--primary-blue);
+    font-size: 30px;
+}
+
+.report-header p {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* Form fields */
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 9px;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.form-group input[type="text"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font: inherit;
+    background: white;
+    color: var(--text-dark);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: 2px solid var(--primary-blue);
+    outline-offset: 1px;
+}
+
+/* Map */
+#incident-map {
+    height: 350px;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: #E2E8F0;
+    z-index: 0;
+}
+
+.helper-text {
+    margin-top: 10px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+/* Photo upload */
+.form-group input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    background: #F8FAFC;
+}
+
+/* Form feedback */
+#form-message {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 18px;
+}
+
+/* Buttons */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 14px;
+    margin-top: 25px;
+}
+
+.cancel-button {
+    display: inline-block;
+    padding: 13px 22px;
+    border: 1px solid var(--primary-blue);
+    border-radius: 8px;
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.cancel-button:hover {
+    background: #EEF2FF;
+}
+
+#submit-button {
+    padding: 14px 24px;
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#submit-button:hover {
+    background: var(--primary-blue-dark);
+}
+
+#submit-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+    body {
+        padding: 15px;
+    }
+
+    .report-container {
+        padding: 22px 18px;
+    }
+
+    .report-header h1 {
+        font-size: 24px;
+    }
+
+    #incident-map {
+        height: 280px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cancel-button,
+    #submit-button {
+        width: 100%;
+        text-align: center;
+    }
+}

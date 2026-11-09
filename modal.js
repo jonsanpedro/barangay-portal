@@ -81,22 +81,126 @@ document.addEventListener("keydown", function(event) {
 const registerForm = document.getElementById("register-form");
 const loginForm = document.getElementById("login-form");
 
-registerForm.addEventListener("submit", function(event) {
+registerForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
     const password = document.getElementById("reg-password").value;
-    const confirmPassword = document.getElementById("reg-confirm-password").value;
+    const confirmPassword =
+        document.getElementById("reg-confirm-password").value;
 
     if (password !== confirmPassword) {
-        alert("Passwords do not match. Please try again.");
+        alert("Passwords do not match.");
         return;
     }
 
-    alert("Form validation passed. Database registration is not yet connected.");
+    const formData = new FormData(registerForm);
+
+    try {
+        const response = await fetch("api/register.php", {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.json();
+
+        alert(result.message);
+
+        if (response.ok) {
+            registerForm.reset();
+            openModal(loginModal);
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert("Unable to connect to the registration server.");
+    }
 });
 
-loginForm.addEventListener("submit", function(event) {
+loginForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
-    alert("Login authentication is not yet connected.");
+    const formData = new FormData(loginForm);
+
+    try {
+        const response = await fetch("api/login.php", {
+            method: "POST",
+            body: formData,
+            credentials: "same-origin"
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.message);
+            return;
+        }
+
+        loginForm.reset();
+        closeModals();
+
+        alert(result.message);
+
+        await updateAccountNavigation();
+
+    } catch (error) {
+        console.error(error);
+        alert("Unable to connect to the login server.");
+    }
 });
+
+
+const accountName = document.getElementById("account-name");
+const logoutButton = document.getElementById("logout-button");
+
+async function updateAccountNavigation() {
+    try {
+        const response = await fetch("api/session.php", {
+            credentials: "same-origin",
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            throw new Error("Session check failed");
+        }
+
+        const data = await response.json();
+
+        if (data.authenticated) {
+            openLogin.hidden = true;
+            accountName.hidden = false;
+            logoutButton.hidden = false;
+
+            accountName.textContent =
+                "Hello, " + data.user.first_name;
+        } else {
+            openLogin.hidden = false;
+            accountName.hidden = true;
+            logoutButton.hidden = true;
+            accountName.textContent = "";
+        }
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+logoutButton.addEventListener("click", async function() {
+    try {
+        const response = await fetch("api/logout.php", {
+            method: "POST",
+            credentials: "same-origin"
+        });
+
+        if (!response.ok) {
+            throw new Error("Logout failed");
+        }
+
+        await updateAccountNavigation();
+
+    } catch (error) {
+        console.error(error);
+        alert("Unable to log out. Please try again.");
+    }
+});
+
+updateAccountNavigation();
