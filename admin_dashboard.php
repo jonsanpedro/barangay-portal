@@ -39,7 +39,7 @@ $firstName = htmlspecialchars(
                     Dashboard Overview
                 </a>
 
-                <a href="#" class="nav-placeholder">
+                <a href="admin_incidents.php">
                     Incident Reports
                 </a>
 

@@ -215,3 +215,181 @@ body {
     outline: 2px solid #F4B83F;
     outline-offset: 2px;
 }
+
+
+/* View Incident Details Button */
+
+.view-details-btn {
+    display: inline-block;
+    padding: 9px 15px;
+    background-color: #27358B;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background-color 0.2s ease;
+}
+
+.view-details-btn:hover {
+    background-color: #1C286D;
+    color: #ffffff;
+}
+
+.view-details-btn:focus-visible {
+    outline: 3px solid #F4B83F;
+    outline-offset: 3px;
+}
+
+
+/* Incident Status Badges */
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Processing Status */
+
+.status-pending {
+    background: #FFF3CD;
+    color: #856404;
+}
+
+.status-progress {
+    background: #DBEAFE;
+    color: #1D4ED8;
+}
+
+.status-resolved {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+/* Map Approval Status */
+
+.status-review {
+    background: #F3F4F6;
+    color: #374151;
+}
+
+.status-approved {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.status-rejected {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+
+/* Admin Map Approval Controls */
+
+.map-approval-section {
+    margin-top: 25px;
+    padding: 22px;
+    background: #F8FAFC;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+}
+
+.map-approval-section h3 {
+    color: #27358B;
+    margin-top: 0;
+}
+
+.map-approval-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.approve-btn,
+.reject-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 11px 22px;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.approve-btn {
+    background: #166534;
+}
+
+.approve-btn:hover {
+    background: #14532D;
+}
+
+.reject-btn {
+    background: #991B1B;
+}
+
+.reject-btn:hover {
+    background: #7F1D1D;
+}
+
+.approve-btn:focus-visible,
+.reject-btn:focus-visible {
+    outline: 3px solid #F4B83F;
+    outline-offset: 3px;
+}
+
+
+/* Processing Status Management */
+
+.processing-status-section {
+    margin-top: 25px;
+    padding: 22px;
+    background: #F8FAFC;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+}
+
+.processing-status-section h3 {
+    color: #27358B;
+    margin-top: 0;
+}
+
+.processing-status-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.processing-status-form label {
+    font-weight: 600;
+    color: #121B2C;
+}
+
+.processing-status-form select {
+    padding: 11px 12px;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    background: #FFFFFF;
+    font-size: 14px;
+}
+
+.update-status-btn {
+    align-self: flex-start;
+    padding: 11px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #27358B;
+    color: #FFFFFF;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.update-status-btn:hover {
+    background: #1C286D;
+}

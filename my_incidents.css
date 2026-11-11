@@ -1,0 +1,80 @@
+
+/* My Incident Reports */
+
+.incidents-container {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 30px;
+}
+
+.incidents-container h1 {
+    color: #27358B;
+    margin-bottom: 12px;
+}
+
+.incidents-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 25px;
+}
+
+.incidents-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.incidents-table th {
+    background: #27358B;
+    color: #ffffff;
+    padding: 15px;
+    text-align: left;
+}
+
+.incidents-table td {
+    padding: 14px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.incidents-table tr:hover {
+    background: #f8fafc;
+}
+
+/* Status badges */
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-progress {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status-resolved,
+.status-approved {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-review {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.status-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
