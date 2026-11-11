@@ -20,7 +20,7 @@
     <nav>
         
         <a href="index.html" class="active" aria-current="page">Home</a>
-        <a href="#community-map">Community Map</a>
+        <a href="community_map.php">Community Map</a>
         <a href="#announcements">Announcements</a>
         <a href="#login-modal" id="open-login">Login</a>
         <span id="account-name" hidden></span>
@@ -54,15 +54,19 @@
 
                 <div class="hero-buttons">
 
-                    <a href="report_incident.php" class="btn btn-primary">
+                    <a href="report_incident.php"
+                        id="report-incident"
+                        class="btn btn-primary">
                         Report an Incident
                     </a>
 
-                    <a href="#track" class="btn btn-secondary">
+                    <a href="my_incidents.php"
+                        id="track-my-report"
+                        class="btn btn-secondary">
                         Track My Report
                     </a>
 
-                    <a href="#community-map" class="btn btn-secondary">
+                    <a href="community_map.php" class="btn btn-outline">
                         Community Map
                     </a>
 
@@ -116,68 +120,106 @@
     </section>
 
     
-    <section class="portal-features">
-        <h2>Explore Our Portal Features</h2>
-         <p>Discover what you can do through our community portal.</p>
+<!-- Portal Features -->
+<section class="portal-features">
 
-        <div class="features-container">
-            
-        <div class="feature-card">
+    <h2>Explore Our Portal Features</h2>
+
+    <p>
+        Discover what you can do through our community portal.
+    </p>
+
+    <div class="features-container">
+
+        <!-- Feature 1: Report an Incident -->
+        <a href="report_incident.php"
+           class="feature-card"
+           data-resident-destination="report_incident.php">
+
             <i class="bi bi-file-earmark-plus"></i>
+
             <h3>Report an Incident</h3>
-            <p>Submit incident reports or public service requests to notify barangay personnel about community concerns.</p>
-        </div>
 
-        
-        <div class="feature-card">
+            <p>
+                Submit incident reports or public service
+                requests to notify barangay personnel
+                about community concerns.
+            </p>
+
+        </a>
+
+        <!-- Feature 2: Community Issue Map -->
+        <a href="community_map.php"
+           class="feature-card">
+
             <i class="bi bi-geo-alt"></i>
+
             <h3>Community Issue Map</h3>
-            <p>View incidents that have been reviewed and approved by barangay personnel on the community map.</p>
-        </div>
 
-        <div class="feature-card">
+            <p>
+                View incidents that have been reviewed
+                and approved by barangay personnel
+                on the community map.
+            </p>
+
+        </a>
+
+        <!-- Feature 3: Track Your Report -->
+        <a href="my_incidents.php"
+           class="feature-card"
+           data-resident-destination="my_incidents.php">
+
             <i class="bi bi-clipboard-check"></i>
-             <h3>Track Your Report</h3>
-            <p>Monitor the progress of your submitted report and check its current status.</p>
-        </div>
 
-        <div class="feature-card">
+            <h3>Track Your Report</h3>
+
+            <p>
+                Monitor the progress of your submitted
+                report and check its current status.
+            </p>
+
+        </a>
+
+        <!-- Feature 4: Barangay Announcements -->
+        <a href="#announcements"
+           class="feature-card">
+
             <i class="bi bi-megaphone"></i>
+
             <h3>Barangay Announcements</h3>
-             <p>Stay informed about important barangay news, updates, and community advisories.</p>
-        </div>
 
+            <p>
+                Stay informed about important barangay
+                news, updates, and community advisories.
+            </p>
 
-        </div>
+        </a>
+
+    </div>
+
 </section>
 
-        <section class="announcements">
+        <!-- Barangay Announcements -->
+        <section class="announcements" id="announcements">
+
             <h2>Latest Barangay Announcements</h2>
-            <p>Stay informed about community news and important updates.</p>
 
-        <div class="announcements-container">
-            <article class="announcement-card">
-                <p class="announcement-date">October 22, 2026</p>
-                <h3>Community Clean-Up Drive</h3>
-                 <p>Join our community clean-up activity to help maintain a cleaner and healthier environment.</p>
-            </article>
+        <p>
+            Stay informed about community news
+            and important updates.
+        </p>
 
-            <article class="announcement-card">
-                <p class="announcement-date">October 20, 2026</p>
-                <h3>Barangay Health Program</h3>
-                <p>Residents are encouraged to participate in upcoming community health activities and services.</p>
-                    </article>
+        <div class="announcements-container"
+            id="announcements-container">
 
-            <article class="announcement-card">
-                <p class="announcement-date">October 18, 2026</p>
-                <h3>Public Advisory</h3>
-                <p>Stay updated on important barangay reminders, public services, and community guidelines.</p>
-            </article>
+            <p>Loading announcements...</p>
 
-        </div>
-    </section>
+    </div>
+
+</section>
 
 </main>
+
 
 
 <footer class="site-footer">
@@ -190,17 +232,28 @@
 
         <div class="footer-links">
             <h3>Quick Links</h3>
+
             <a href="index.html">Home</a>
-            <a href="#">Community Map</a>
-            <a href="#">Announcements</a>
+
+            <a href="community_map.php">
+                Community Map
+            </a>
+
+            <a href="#announcements">
+                Announcements
+            </a>
         </div>
 
     </div>
 
     <div class="footer-bottom">
-        <p>&copy; 2026 Barangay Chrysanthemum. All rights reserved.</p>
+        <p>
+            &copy; 2026 Barangay Chrysanthemum.
+            All rights reserved.
+        </p>
     </div>
 </footer>
+
 
 <script src="script.js"></script>
 
@@ -272,19 +325,25 @@
             <div class="form-group">
                 <label for="reg-first-name">First Name</label>
                 <input type="text" id="reg-first-name"
-                       name="first_name" required>
+                    name="first_name"
+                    maxlength="100"
+                    required>
             </div>
 
             <div class="form-group">
                 <label for="reg-last-name">Last Name</label>
                 <input type="text" id="reg-last-name"
-                       name="last_name" required>
+                    name="last_name"
+                    maxlength="100"
+                    required>
             </div>
 
             <div class="form-group">
                 <label for="reg-email">Email Address</label>
                 <input type="email" id="reg-email"
-                       name="email" required>
+                    name="email"
+                    maxlength="255"
+                    required>
             </div>
 
             <div class="form-group">
@@ -299,9 +358,10 @@
             <div class="form-group">
                 <label for="reg-address">Barangay Address</label>
                 <input type="text" id="reg-address"
-                       name="address"
-                       placeholder="House no., street, subdivision"
-                       required>
+                    name="address"
+                    placeholder="House no., street, subdivision"
+                    maxlength="255"
+                    required>
             </div>
 
             <div class="form-group">
@@ -335,6 +395,8 @@
 </div>
 
 <script src="modal.js"></script>
+
+<script src="announcements.js" defer></script>
 
 
 </body>

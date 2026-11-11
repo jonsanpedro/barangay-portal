@@ -12,6 +12,8 @@ if (empty($_SESSION["admin_csrf_token"])) {
         bin2hex(random_bytes(32));
 }
 
+
+
 // Validate incident ID from the URL.
 $incidentId = filter_input(
     INPUT_GET,

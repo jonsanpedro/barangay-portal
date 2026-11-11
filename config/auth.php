@@ -12,6 +12,40 @@ function requireRole(string $requiredRole): array
         exit("Unauthorized. Please log in.");
     }
 
+/* AUTHENTICATED SESSION INACTIVITY TIMEOUT */
+
+$inactivityLimit = 30 * 60; // 30 minutes
+$currentTime = time();
+
+if (isset($_SESSION["last_activity"])) {
+    $inactiveSeconds = $currentTime - $_SESSION["last_activity"];
+
+    if ($inactiveSeconds >= $inactivityLimit) {
+        $_SESSION = [];
+
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+
+            setcookie(session_name(), "", [
+                "expires" => time() - 3600,
+                "path" => $params["path"],
+                "domain" => $params["domain"],
+                "secure" => $params["secure"],
+                "httponly" => $params["httponly"],
+                "samesite" => $params["samesite"]
+            ]);
+        }
+
+        session_destroy();
+
+        http_response_code(401);
+        exit("Session expired due to inactivity. Please log in again.");
+    }
+}
+
+$_SESSION["last_activity"] = $currentTime;
+
+
     $stmt = $pdo->prepare(
         "SELECT user_id, first_name, last_name, email, role
          FROM users

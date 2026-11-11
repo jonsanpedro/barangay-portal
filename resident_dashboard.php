@@ -1,4 +1,3 @@
-
 <?php
 
 require_once __DIR__ . "/config/auth.php";
@@ -43,8 +42,9 @@ $firstName = htmlspecialchars(
 
             <p>
                 Manage your community reports in one place.
-                Submit new incidents and track the progress
-                of your existing reports.
+                Submit new incidents, track the progress
+                of your existing reports, and view
+                approved incidents on the Community Map.
             </p>
 
         </section>
@@ -52,6 +52,7 @@ $firstName = htmlspecialchars(
         <!-- Dashboard Action Cards -->
         <section class="resident-actions">
 
+            <!-- Card 1: Report an Incident -->
             <a href="report_incident.php"
                class="resident-action-card">
 
@@ -65,6 +66,7 @@ $firstName = htmlspecialchars(
 
             </a>
 
+            <!-- Card 2: My Incident Reports -->
             <a href="my_incidents.php"
                class="resident-action-card">
 
@@ -74,6 +76,20 @@ $firstName = htmlspecialchars(
                     View your submitted incidents,
                     reference numbers, processing statuses,
                     and map approval statuses.
+                </p>
+
+            </a>
+
+            <!-- Card 3: Community Map -->
+            <a href="community_map.php"
+               class="resident-action-card">
+
+                <h3>Community Map</h3>
+
+                <p>
+                    View community incidents that have
+                    been reviewed and approved by
+                    barangay personnel on the public map.
                 </p>
 
             </a>

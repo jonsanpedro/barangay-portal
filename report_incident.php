@@ -4,6 +4,14 @@ require_once __DIR__ . "/config/auth.php";
 // Only authenticated residents can access this page.
 $resident = requireRole("resident");
 
+
+/* Generate CSRF token for incident submission. */
+
+if (empty($_SESSION["incident_csrf_token"])) {
+    $_SESSION["incident_csrf_token"] = bin2hex(random_bytes(32));
+}
+
+
 $firstName = htmlspecialchars(
     $resident["first_name"],
     ENT_QUOTES,
@@ -44,6 +52,15 @@ $firstName = htmlspecialchars(
             id="incident-form"
             method="POST"
             enctype="multipart/form-data"
+        >
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="<?= htmlspecialchars(
+            $_SESSION["incident_csrf_token"],
+            ENT_QUOTES,
+            "UTF-8"
+        ) ?>"
         >
 
             <div class="form-group">

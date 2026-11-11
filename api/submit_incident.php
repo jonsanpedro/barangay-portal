@@ -20,6 +20,28 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 header("Content-Type: application/json; charset=utf-8");
 
 
+/* VERIFY INCIDENT SUBMISSION CSRF TOKEN */
+
+$submittedToken = $_POST["csrf_token"] ?? "";
+$sessionToken = $_SESSION["incident_csrf_token"] ?? "";
+
+if (
+    !is_string($submittedToken) ||
+    !is_string($sessionToken) ||
+    $sessionToken === "" ||
+    !hash_equals($sessionToken, $submittedToken)
+) {
+    http_response_code(403);
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Invalid incident security token. Please refresh the page."
+    ]);
+
+    exit;
+}
+
+
 // Read submitted incident details.
 $category = trim($_POST["category"] ?? "");
 $title = trim($_POST["title"] ?? "");
@@ -176,12 +198,61 @@ $referenceNumber = "";
 $photoPath = null;
 $savedPhotoFile = null;
 
+
 try {
 
     // Start database transaction.
     $pdo->beginTransaction();
 
-    // Save the uploaded photo if provided.
+    
+
+
+/* INCIDENT SUBMISSION RATE LIMIT */
+
+// Lock this resident's user record until the transaction ends.
+// This serializes incident submissions for the same resident.
+    $lockStmt = $pdo->prepare(
+        "SELECT user_id
+        FROM users
+        WHERE user_id = ?
+        FOR UPDATE"
+    );
+
+$lockStmt->execute([$resident["user_id"]]);
+
+if (!$lockStmt->fetchColumn()) {
+    throw new RuntimeException("Resident account not found.");
+}
+
+// Count successful submissions in the last 60 minutes.
+$limitStmt = $pdo->prepare(
+    "SELECT COUNT(*)
+     FROM incidents
+     WHERE resident_id = ?
+       AND created_at > DATE_SUB(NOW(), INTERVAL 60 MINUTE)"
+);
+
+$limitStmt->execute([$resident["user_id"]]);
+
+$recentReports = (int) $limitStmt->fetchColumn();
+
+if ($recentReports >= 5) {
+    $pdo->rollBack();
+
+    header("Retry-After: 3600");
+    http_response_code(429);
+
+    echo json_encode([
+        "success" => false,
+        "message" =>
+            "You have reached the limit of 5 incident reports per hour. Please try again later."
+    ]);
+
+    exit;
+}
+
+
+// Save the uploaded photo if provided.
     if ($validatedPhoto !== null) {
 
         $uploadDirectory =

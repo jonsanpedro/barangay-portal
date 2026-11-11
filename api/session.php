@@ -11,6 +11,39 @@ if (!isset($_SESSION["user_id"])) {
     exit;
 }
 
+
+/* CHECK SESSION INACTIVITY */
+
+$inactivityLimit = 30 * 60; // 30 minutes
+$currentTime = time();
+$lastActivity = $_SESSION["last_activity"] ?? null;
+
+if (
+    !is_int($lastActivity) ||
+    ($currentTime - $lastActivity) >= $inactivityLimit
+) {
+    $_SESSION = [];
+
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+
+        setcookie(session_name(), "", [
+            "expires" => time() - 3600,
+            "path" => $params["path"],
+            "domain" => $params["domain"],
+            "secure" => $params["secure"],
+            "httponly" => $params["httponly"],
+            "samesite" => $params["samesite"]
+        ]);
+    }
+
+    session_destroy();
+
+    echo json_encode(["authenticated" => false]);
+    exit;
+}
+
+
 $stmt = $pdo->prepare(
     "SELECT user_id, first_name, role
      FROM users

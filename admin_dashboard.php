@@ -10,6 +10,57 @@ $firstName = htmlspecialchars(
     "UTF-8"
 );
 
+
+try {
+    $stmt = $pdo->query(
+        "SELECT
+            COUNT(*) AS total_reports,
+            COUNT(CASE
+                WHEN processing_status = 'Pending'
+                THEN 1
+            END) AS pending_reports,
+            COUNT(CASE
+                WHEN processing_status = 'In Progress'
+                THEN 1
+            END) AS in_progress_reports,
+            COUNT(CASE
+                WHEN processing_status = 'Resolved'
+                THEN 1
+            END) AS resolved_reports
+         FROM incidents"
+    );
+
+    $stats = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Retrieve the five most recent incident reports.
+    $recentStmt = $pdo->query(
+        "SELECT
+            incident_id,
+            reference_number,
+            title,
+            category,
+            processing_status,
+            map_approval_status,
+            created_at
+         FROM incidents
+         ORDER BY created_at DESC, incident_id DESC
+         LIMIT 5"
+    );
+
+    $recentIncidents = $recentStmt->fetchAll(
+        PDO::FETCH_ASSOC
+    );
+
+
+} catch (PDOException $e) {
+    error_log(
+        "Admin dashboard statistics error: " . $e->getMessage()
+    );
+
+    http_response_code(500);
+    exit("Unable to load dashboard statistics.");
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -47,7 +98,7 @@ $firstName = htmlspecialchars(
                     Map Approvals
                 </a>
 
-                <a href="#" class="nav-placeholder">
+                <a href="admin_announcements.php">
                     Announcements
                 </a>
 
@@ -84,44 +135,147 @@ $firstName = htmlspecialchars(
             </header>
 
             <!-- Summary Cards -->
+            
             <section class="stats-grid" aria-label="Incident summary">
 
                 <article class="stat-card">
                     <p>Total Reports</p>
-                    <h2>—</h2>
+                    <h2><?= (int) $stats["total_reports"] ?></h2>
                 </article>
 
-                <article class="stat-card">
+                 <article class="stat-card">
                     <p>Pending Reports</p>
-                    <h2>—</h2>
+                    <h2><?= (int) $stats["pending_reports"] ?></h2>
                 </article>
 
                 <article class="stat-card">
                     <p>In Progress</p>
-                    <h2>—</h2>
+                    <h2><?= (int) $stats["in_progress_reports"] ?></h2>
                 </article>
 
                 <article class="stat-card">
                     <p>Resolved Reports</p>
-                    <h2>—</h2>
+                    <h2><?= (int) $stats["resolved_reports"] ?></h2>
                 </article>
 
             </section>
 
-            <!-- Recent Reports -->
-            <section class="recent-reports">
+
+        <!-- Recent Reports -->
+            
+        <section class="recent-reports">
+
                 <div class="section-heading">
                     <h2>Recent Incident Reports</h2>
-                    <p>
-                        Latest incident submissions
-                        will appear here.
-                    </p>
+                    <p>Latest incident submissions</p>
+
+                    <a href="admin_incidents.php"
+                        class="view-all-reports-btn">
+                        View All Reports
+                    </a>
                 </div>
 
+                <?php if (empty($recentIncidents)): ?>
+
                 <div class="empty-state">
-                    No incident data connected yet.
+                    No incident reports available yet.
                 </div>
-            </section>
+
+                <?php else: ?>
+
+        <div class="recent-table-wrapper">
+            <table class="recent-incidents-table">
+
+                <thead>
+                    <tr>
+                        <th>Reference Number</th>
+                        <th>Incident Title</th>
+                        <th>Category</th>
+                        <th>Processing Status</th>
+                        <th>Date Submitted</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <?php foreach ($recentIncidents as $incident): ?>
+
+                        <tr>
+                            <td>
+                                <?= htmlspecialchars(
+                                    $incident["reference_number"],
+                                    ENT_QUOTES,
+                                    "UTF-8"
+                                ) ?>
+                            </td>
+
+                            <td>
+                                <?= htmlspecialchars(
+                                    $incident["title"],
+                                    ENT_QUOTES,
+                                    "UTF-8"
+                                ) ?>
+                            </td>
+
+                            <td>
+                                <?= htmlspecialchars(
+                                    $incident["category"],
+                                    ENT_QUOTES,
+                                    "UTF-8"
+                                ) ?>
+                            </td>
+
+                            <td>
+                                <?php
+                                    $status = $incident["processing_status"];
+
+                                    $statusClass = match ($status) {
+                                        "Pending" => "status-pending",
+                                        "In Progress" => "status-in-progress",
+                                        "Resolved" => "status-resolved",
+                                        default => "status-unknown"
+                                    };
+                                ?>
+
+                                <span class="incident-status <?= $statusClass ?>">
+                                    <?= htmlspecialchars(
+                                        $status,
+                                        ENT_QUOTES,
+                                        "UTF-8"
+                                    ) ?>
+                                </span>
+                            </td>
+
+                            <td>
+                                <?= htmlspecialchars(
+                                    $incident["created_at"],
+                                    ENT_QUOTES,
+                                    "UTF-8"
+                                ) ?>
+                            </td>
+
+                            <td>
+                                <a
+                                    href="admin_incident_details.php?id=<?= (int) $incident["incident_id"] ?>"
+                                    class="view-incident-btn"
+                                >
+                                    View Details
+                                </a>
+                            </td>
+                        </tr>
+
+                    <?php endforeach; ?>
+
+                </tbody>
+
+            </table>
+        </div>
+
+    <?php endif; ?>
+
+</section>
+
 
         </main>
     </div>

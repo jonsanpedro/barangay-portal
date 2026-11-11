@@ -7,6 +7,7 @@ const switchToRegister = document.getElementById("switch-to-register");
 const switchToLogin = document.getElementById("switch-to-login");
 
 let previousFocus = null;
+let redirectAfterLogin = null;
 
 function openModal(modal) {
     if (loginModal.hidden && registerModal.hidden) {
@@ -95,11 +96,31 @@ registerForm.addEventListener("submit", async function(event) {
 
     const formData = new FormData(registerForm);
 
-    try {
-        const response = await fetch("api/register.php", {
-            method: "POST",
-            body: formData
-        });
+    
+
+try {
+    // Request CSRF token from the server.
+    const tokenResponse = await fetch("api/registration_csrf.php", {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store"
+    });
+
+    if (!tokenResponse.ok) {
+        throw new Error("Unable to retrieve security token.");
+    }
+
+    const tokenData = await tokenResponse.json();
+
+    // Include CSRF token in registration data.
+    formData.append("csrf_token", tokenData.csrf_token);
+
+    // Submit registration request.
+    const response = await fetch("api/register.php", {
+        method: "POST",
+        body: formData,
+        credentials: "same-origin"
+    });
 
         const result = await response.json();
 
@@ -122,6 +143,26 @@ loginForm.addEventListener("submit", async function(event) {
     const formData = new FormData(loginForm);
 
     try {
+
+        const tokenResponse = await fetch("api/login_csrf.php", {
+            method: "GET",
+            credentials: "same-origin",
+            cache: "no-store"
+        });
+
+        if (!tokenResponse.ok) {
+            throw new Error("Unable to retrieve login security token.");
+        }
+
+        const tokenData = await tokenResponse.json();
+
+        if (typeof tokenData.csrf_token !== "string") {
+            throw new Error("Invalid login security token response.");
+        }
+
+        formData.set("csrf_token", tokenData.csrf_token);
+
+
         const response = await fetch("api/login.php", {
             method: "POST",
             body: formData,
@@ -141,6 +182,28 @@ loginForm.addEventListener("submit", async function(event) {
         alert(result.message);
 
         await updateAccountNavigation();
+
+        if (redirectAfterLogin) {
+            const destination = redirectAfterLogin;
+            redirectAfterLogin = null;
+
+            const sessionResponse = await fetch("api/session.php", {
+                credentials: "same-origin",
+                cache: "no-store"
+        });
+
+        if (!sessionResponse.ok) {
+            throw new Error("Unable to verify login session");
+        }
+
+        const sessionData = await sessionResponse.json();
+
+        if (sessionData.authenticated &&
+            sessionData.user.role === "resident") {
+
+            window.location.href = destination;
+        }
+    }
 
     } catch (error) {
         console.error(error);
@@ -204,3 +267,134 @@ logoutButton.addEventListener("click", async function() {
 });
 
 updateAccountNavigation();
+
+const trackMyReport = document.getElementById("track-my-report");
+
+trackMyReport.addEventListener("click", async function(event) {
+    event.preventDefault();
+
+    try {
+        const response = await fetch("api/session.php", {
+            credentials: "same-origin",
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            throw new Error("Session check failed");
+        }
+
+        const data = await response.json();
+
+        if (data.authenticated &&
+            data.user.role === "resident") {
+
+            window.location.href = "my_incidents.php";
+
+        } else {
+            redirectAfterLogin = "my_incidents.php";
+            openModal(loginModal);
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert("Unable to verify your session. Please try again.");
+    }
+});
+
+
+/* REPORT AN INCIDENT BUTTON */
+
+const reportIncident = document.getElementById("report-incident");
+
+if (reportIncident) {
+    reportIncident.addEventListener("click", async function(event) {
+        event.preventDefault();
+
+        try {
+            const response = await fetch("api/session.php", {
+                credentials: "same-origin",
+                cache: "no-store"
+            });
+
+            if (!response.ok) {
+                throw new Error("Session check failed");
+            }
+
+            const data = await response.json();
+
+            if (
+                data.authenticated &&
+                data.user.role === "resident"
+            ) {
+                // Resident is already logged in.
+                window.location.href = "report_incident.php";
+
+            } else {
+                // Visitor must log in first.
+                redirectAfterLogin = "report_incident.php";
+                openModal(loginModal);
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert("Unable to verify your session. Please try again.");
+        }
+    });
+}
+
+
+/* =====================================
+   PORTAL FEATURE CARDS
+===================================== */
+
+const residentFeatureCards = document.querySelectorAll(
+    "[data-resident-destination]"
+);
+
+residentFeatureCards.forEach(function(card) {
+
+    card.addEventListener("click", async function(event) {
+        event.preventDefault();
+
+        const destination = card.dataset.residentDestination;
+
+        // Only allow known resident pages.
+        const allowedDestinations = [
+            "report_incident.php",
+            "my_incidents.php"
+        ];
+
+        if (!allowedDestinations.includes(destination)) {
+            return;
+        }
+
+        try {
+            const response = await fetch("api/session.php", {
+                credentials: "same-origin",
+                cache: "no-store"
+            });
+
+            if (!response.ok) {
+                throw new Error("Session check failed");
+            }
+
+            const data = await response.json();
+
+            if (
+                data.authenticated &&
+                data.user.role === "resident"
+            ) {
+                window.location.href = destination;
+
+            } else {
+                redirectAfterLogin = destination;
+                openModal(loginModal);
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert("Unable to verify your session. Please try again.");
+        }
+    });
+
+});
