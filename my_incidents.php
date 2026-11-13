@@ -26,6 +26,7 @@ $stmt->execute([$resident["user_id"]]);
 
 $incidents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Safely display the resident's first name.
 $firstName = htmlspecialchars(
     $resident["first_name"],
     ENT_QUOTES,
@@ -36,8 +37,10 @@ $firstName = htmlspecialchars(
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
@@ -49,25 +52,26 @@ $firstName = htmlspecialchars(
 
 <body>
 
-    <main class="incidents-container">
+<main class="incidents-container">
 
-        <h1>My Incident Reports</h1>
+    <h1>My Incident Reports</h1>
+
+    <p>
+        Welcome, <?= $firstName ?>!
+        Here are the incident reports you submitted.
+    </p>
+
+    <?php if (empty($incidents)): ?>
 
         <p>
-            Welcome, <?= $firstName ?>!
-            Here are the incident reports you submitted.
+            You have not submitted any incident reports yet.
         </p>
 
-        <?php if (empty($incidents)): ?>
+    <?php else: ?>
 
-            <p>
-                You have not submitted any incident reports yet.
-            </p>
+        <div class="incidents-table-wrapper">
 
-        <?php else: ?>
-
-            <div class="incidents-table-wrapper">
-                <table class="incidents-table">
+            <table class="incidents-table">
 
                 <thead>
                     <tr>
@@ -78,116 +82,147 @@ $firstName = htmlspecialchars(
                         <th>Processing Status</th>
                         <th>Map Approval</th>
                         <th>Date Submitted</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
 
                 <tbody>
 
-                    <?php foreach ($incidents as $incident): ?>
+                <?php foreach ($incidents as $incident): ?>
 
-                        <tr>
-                            <td>
-                                <?= htmlspecialchars(
-                                    $incident["reference_number"],
-                                    ENT_QUOTES,
-                                    "UTF-8"
-                                ) ?>
-                            </td>
+                    <tr>
 
-                            <td>
-                                <?= htmlspecialchars(
-                                    $incident["title"],
-                                    ENT_QUOTES,
-                                    "UTF-8"
-                                ) ?>
-                            </td>
+                        <!-- Reference Number -->
+                        <td>
+                            <?= htmlspecialchars(
+                                $incident["reference_number"],
+                                ENT_QUOTES,
+                                "UTF-8"
+                            ) ?>
+                        </td>
 
-                            <td>
-                                <?= htmlspecialchars(
-                                    $incident["category"],
-                                    ENT_QUOTES,
-                                    "UTF-8"
-                                ) ?>
-                            </td>
+                        <!-- Incident Title -->
+                        <td>
+                            <?= htmlspecialchars(
+                                $incident["title"],
+                                ENT_QUOTES,
+                                "UTF-8"
+                            ) ?>
+                        </td>
 
-                            <td>
-                                <?= htmlspecialchars(
-                                    $incident["location_address"],
-                                    ENT_QUOTES,
-                                    "UTF-8"
-                                ) ?>
-                            </td>
+                        <!-- Category -->
+                        <td>
+                            <?= htmlspecialchars(
+                                $incident["category"],
+                                ENT_QUOTES,
+                                "UTF-8"
+                            ) ?>
+                        </td>
 
-                            
-                            <td>
-                                <?php
-                                    $processingStatus = $incident["processing_status"];
+                        <!-- Location -->
+                        <td>
+                            <?= htmlspecialchars(
+                                $incident["location_address"],
+                                ENT_QUOTES,
+                                "UTF-8"
+                            ) ?>
+                        </td>
 
-                                    $processingClass = match ($processingStatus) {
-                                    "Pending" => "status-pending",
-                                    "In Progress" => "status-progress",
-                                    "Resolved" => "status-resolved",
-                                    default => "status-review"
-                                    };
-                                ?>
+                        <!-- Processing Status -->
+                        <td>
+
+                            <?php
+
+                            $processingStatus =
+                                $incident["processing_status"];
+
+                            $processingClass = match ($processingStatus) {
+                                "Pending" => "status-pending",
+                                "In Progress" => "status-progress",
+                                "Resolved" => "status-resolved",
+                                default => "status-review"
+                            };
+
+                            ?>
 
                             <span class="status-badge <?= $processingClass ?>">
                                 <?= htmlspecialchars(
                                     $processingStatus,
                                     ENT_QUOTES,
                                     "UTF-8"
-                                    ) ?>
+                                ) ?>
                             </span>
-                            </td>
 
+                        </td>
 
-                            
-                            <td>
-                                <?php
-                                    $mapStatus = $incident["map_approval_status"];
+                        <!-- Map Approval Status -->
+                        <td>
 
-                                    $mapClass = match ($mapStatus) {
-                                    "For Review" => "status-review",
-                                    "Approved" => "status-approved",
-                                    "Rejected" => "status-rejected",
-                                    default => "status-review"
-                                    };
-                                ?>
+                            <?php
+
+                            $mapStatus =
+                                $incident["map_approval_status"];
+
+                            $mapClass = match ($mapStatus) {
+                                "For Review" => "status-review",
+                                "Approved" => "status-approved",
+                                "Rejected" => "status-rejected",
+                                default => "status-review"
+                            };
+
+                            ?>
 
                             <span class="status-badge <?= $mapClass ?>">
-                            <?= htmlspecialchars(
-                            $mapStatus,
-                            ENT_QUOTES,
-                            "UTF-8"
-                            ) ?>
-                            </span>
-                            </td>
-
-
-                            <td>
                                 <?= htmlspecialchars(
-                                    $incident["created_at"],
+                                    $mapStatus,
                                     ENT_QUOTES,
                                     "UTF-8"
                                 ) ?>
-                            </td>
-                        </tr>
+                            </span>
 
-                    <?php endforeach; ?>
+                        </td>
+
+                        <!-- Date Submitted -->
+                        <td>
+                            <?= htmlspecialchars(
+                                $incident["created_at"],
+                                ENT_QUOTES,
+                                "UTF-8"
+                            ) ?>
+                        </td>
+
+                        <!-- View Incident Details -->
+                        <td>
+
+                            <a
+                                href="incident_details.php?id=<?= (int) $incident["incident_id"] ?>"
+                                class="view-details-button"
+                            >
+                                View Details
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                <?php endforeach; ?>
 
                 </tbody>
 
             </table>
 
-        <?php endif; ?>
+        </div>
 
-        <p>
-            <a href="resident_dashboard.php">
-                Back to Dashboard
-            </a>
-        </p>
+    <?php endif; ?>
 
-    </main>
+    <!-- Navigation -->
+    <p>
+        <a href="resident_dashboard.php">
+            Back to Dashboard
+        </a>
+    </p>
+
+</main>
 
 </body>
 </html>

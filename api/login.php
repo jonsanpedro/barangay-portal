@@ -33,19 +33,33 @@ if (
 }
 
 
-$email = strtolower(trim($_POST["email"] ?? ""));
+$emailInput = $_POST["email"] ?? "";
 $password = $_POST["password"] ?? "";
 
-if ($email === "" || $password === "") {
+if (!is_string($emailInput) || !is_string($password)) {
     respond(422, [
-        "message" => "Please enter your email and password."
+        "message" => "Invalid login input."
     ]);
 }
+
+$email = strtolower(trim($emailInput));
+
+if (
+    $email === "" ||
+    !filter_var($email, FILTER_VALIDATE_EMAIL) ||
+    strlen($email) > 254 ||
+    $password === "" ||
+    strlen($password) > 1024
+) {
+    respond(422, [
+        "message" => "Please enter a valid email and password."
+    ]);
+}
+
 
 /* LOGIN RATE LIMIT CHECK */
 
 $maxAttempts = 5;
-$timeWindow = 15 * 60; // 15 minutes
 
 $ipAddress = $_SERVER["REMOTE_ADDR"] ?? "unknown";
 
@@ -124,11 +138,20 @@ try {
 
     $clearAttemptsStmt->execute([$email]);
 
-    session_regenerate_id(true);
+    if (!session_regenerate_id(true)) {
+    error_log("Failed to regenerate session ID.");
 
-    $_SESSION["user_id"] = (int) $user["user_id"];
-    $_SESSION["role"] = $user["role"];
-    $_SESSION["last_activity"] = time();
+    respond(500, [
+        "message" => "Unable to establish a secure login session."
+    ]);
+}
+
+unset($_SESSION["incident_csrf_token"]);
+unset($_SESSION["login_csrf_token"]);
+
+$_SESSION["user_id"] = (int) $user["user_id"];
+$_SESSION["role"] = $user["role"];
+$_SESSION["last_activity"] = time();
 
 
     respond(200, [

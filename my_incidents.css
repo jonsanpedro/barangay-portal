@@ -78,3 +78,27 @@
     background: #fee2e2;
     color: #991b1b;
 }
+
+
+
+.view-details-button {
+    display: inline-block;
+    padding: 9px 14px;
+    background-color: #27358B;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background-color 0.2s ease;
+}
+
+.view-details-button:hover {
+    background-color: #1C286D;
+}
+
+.view-details-button:focus-visible {
+    outline: 3px solid #F4B83F;
+    outline-offset: 3px;
+}
