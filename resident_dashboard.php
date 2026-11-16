@@ -103,5 +103,8 @@ $firstName = htmlspecialchars(
 
     </main>
 
+ <?php require_once __DIR__ . "/faq_chatbot.php"; ?>
+
+
 </body>
 </html>

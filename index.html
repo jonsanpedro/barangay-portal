@@ -398,6 +398,33 @@
 
 <script src="announcements.js" defer></script>
 
+<div id="faq-chatbot-container"></div>
+
+<script>
+fetch("faq_chatbot.php")
+    .then(function (response) {
+        if (!response.ok) {
+            throw new Error("Chatbot unavailable");
+        }
+        return response.text();
+    })
+    .then(function (html) {
+        const container = document.getElementById(
+            "faq-chatbot-container"
+        );
+
+        container.innerHTML = html;
+
+        // Scripts inserted using innerHTML do not execute.
+        const script = document.createElement("script");
+        script.src = "faq_chatbot.js";
+        document.body.appendChild(script);
+    })
+    .catch(function (error) {
+        console.error("FAQ chatbot error:", error);
+    });
+</script>
+
 
 </body>
 </html>

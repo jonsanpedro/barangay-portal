@@ -1,119 +1,513 @@
+"use strict";
 
-// Initialize the Community Map.
-const communityMap = L.map("community-map").setView(
+// =====================================================
+// BARANGAY CHRYSANTHEMUM - COMMUNITY ISSUE MAP
+// Features:
+// - Approved incidents only (filtered by PHP API)
+// - Color-coded status markers
+// - Incident heatmap
+// - Resident support / same concern
+// =====================================================
+
+//INITIALIZE MAP
+
+const map = L.map("community-map").setView(
     [14.3390453, 121.0432380],
     13
 );
 
-// Add OpenStreetMap tiles.
 L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
         attribution: "&copy; OpenStreetMap contributors",
         maxZoom: 19
     }
-).addTo(communityMap);
+).addTo(map);
 
-// Escape text before inserting it into HTML.
+
+//MAP LAYERS
+
+const incidentLayer = L.layerGroup().addTo(map);
+
+const heatmapLayer = L.heatLayer([], {
+    radius: 28,
+    blur: 20,
+    maxZoom: 17
+});
+
+L.control.layers(
+    {},
+    {
+        "Incident Markers": incidentLayer,
+        "Incident Heatmap": heatmapLayer
+    },
+    { collapsed: false }
+).addTo(map);
+
+
+//SUPPORT DATA
+
+const supportData = new Map();
+let canSupport = false;
+
+
+//SECURITY HELPERS
+
 function escapeHtml(value) {
-    return String(value ?? "").replace(/[&<>"']/g, (char) => {
-        const entities = {
+    return String(value ?? "").replace(
+        /[&<>"']/g,
+        char => ({
             "&": "&amp;",
             "<": "&lt;",
             ">": "&gt;",
             '"': "&quot;",
             "'": "&#39;"
-        };
-
-        return entities[char];
-    });
+        })[char]
+    );
 }
 
-// Load only approved incidents from the API.
+
+//INCIDENT STATUS COLORS
+
+function getStatusColor(status) {
+    switch (status) {
+        case "Pending":
+            return "#f59e0b";
+
+        case "In Progress":
+            return "#2563eb";
+
+        case "Resolved":
+            return "#16a34a";
+
+        default:
+            return "#64748b";
+    }
+}
+
+
+// LOAD SUPPORT COUNTS
+
+async function loadSupportData() {
+    const response = await fetch(
+        "api/get_incident_supports.php",
+        {
+            method: "GET",
+            credentials: "same-origin",
+            cache: "no-store"
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Unable to load support counts.");
+    }
+
+    const data = await response.json();
+
+    if (
+        !data.success ||
+        !Array.isArray(data.supports)
+    ) {
+        throw new Error("Invalid support API response.");
+    }
+
+    supportData.clear();
+
+    data.supports.forEach(item => {
+        const id = Number(item.incident_id);
+
+        if (!Number.isSafeInteger(id) || id <= 0) {
+            return;
+        }
+
+        supportData.set(id, {
+            count: Math.max(
+                0,
+                Number(item.support_count) || 0
+            ),
+            supported: Number(item.supported) === 1
+        });
+    });
+
+    canSupport = data.can_support === true;
+}
+
+
+//GENERATE POPUP CONTENT
+
+function createIncidentPopup(incident) {
+    const id = Number(incident.incident_id);
+
+    const color = getStatusColor(
+        incident.processing_status
+    );
+
+    const support = supportData.get(id) || {
+        count: 0,
+        supported: false
+    };
+
+    const supportButton = canSupport
+        ? `
+            <button
+                type="button"
+                class="incident-support-btn"
+                data-incident-id="${id}"
+            >
+                ${support.supported
+                    ? "Remove My Support"
+                    : "I Have the Same Concern"}
+            </button>
+          `
+        : `
+            <p class="support-login-notice">
+                <small>
+                    Log in as a resident to support
+                    this concern.
+                </small>
+            </p>
+          `;
+
+    return `
+        <div class="incident-popup">
+
+            <h3>
+                ${escapeHtml(incident.title)}
+            </h3>
+
+            <p>
+                <strong>Category:</strong>
+                ${escapeHtml(incident.category)}
+            </p>
+
+            <p>
+                <strong>Location:</strong>
+                ${escapeHtml(incident.location_address)}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                <span
+                    style="
+                        color: ${color};
+                        font-weight: bold;
+                    "
+                >
+                    ${escapeHtml(
+                        incident.processing_status
+                    )}
+                </span>
+            </p>
+
+            <p>
+                <strong>Reference:</strong>
+                ${escapeHtml(
+                    incident.reference_number
+                )}
+            </p>
+
+            <hr>
+
+            <p>
+                <strong>
+                    Residents with Same Concern:
+                </strong>
+
+                <span id="support-count-${id}">
+                    ${support.count}
+                </span>
+            </p>
+
+            ${supportButton}
+
+        </div>
+    `;
+}
+
+
+//LOAD APPROVED INCIDENTS
+
 async function loadApprovedIncidents() {
     try {
         const response = await fetch(
             "api/get_approved_incidents.php",
-            { cache: "no-store" }
+            {
+                method: "GET",
+                credentials: "same-origin",
+                cache: "no-store"
+            }
         );
 
         if (!response.ok) {
-            throw new Error("Unable to load incidents.");
+            throw new Error(
+                "Unable to load approved incidents."
+            );
         }
 
         const data = await response.json();
 
-        if (!data.success || !Array.isArray(data.incidents)) {
-            throw new Error("Invalid API response.");
+        if (
+            !data.success ||
+            !Array.isArray(data.incidents)
+        ) {
+            throw new Error(
+                "Invalid incident API response."
+            );
         }
 
-        const markerBounds = [];
+        // Load support counts and login eligibility.
+        // A support API failure should not hide the map.
+        try {
+            await loadSupportData();
+        } catch (error) {
+            console.error(
+                "Support data error:",
+                error
+            );
 
-        data.incidents.forEach((incident) => {
-            const latitude = Number(incident.latitude);
-            const longitude = Number(incident.longitude);
+            supportData.clear();
+            canSupport = false;
+        }
 
-            // Skip invalid coordinates.
+        incidentLayer.clearLayers();
+
+        const bounds = [];
+        const heatPoints = [];
+
+        data.incidents.forEach(incident => {
+            const lat = Number(
+                incident.latitude
+            );
+
+            const lng = Number(
+                incident.longitude
+            );
+
+            const id = Number(
+                incident.incident_id
+            );
+
+            // Ignore invalid coordinates or IDs.
             if (
-                !Number.isFinite(latitude) ||
-                !Number.isFinite(longitude) ||
-                latitude < -90 ||
-                latitude > 90 ||
-                longitude < -180 ||
-                longitude > 180
+                !Number.isFinite(lat) ||
+                !Number.isFinite(lng) ||
+                lat < -90 ||
+                lat > 90 ||
+                lng < -180 ||
+                lng > 180 ||
+                (lat === 0 && lng === 0) ||
+                !Number.isSafeInteger(id) ||
+                id <= 0
             ) {
                 return;
             }
 
-            const popupContent = `
-                <div>
-                    <h3>${escapeHtml(incident.title)}</h3>
+            const color = getStatusColor(
+                incident.processing_status
+            );
 
-                    <p>
-                        <strong>Category:</strong>
-                        ${escapeHtml(incident.category)}
-                    </p>
+            // Add only valid coordinates to heatmap.
+            heatPoints.push([
+                lat,
+                lng,
+                1
+            ]);
 
-                    <p>
-                        <strong>Location:</strong>
-                        ${escapeHtml(incident.location_address)}
-                    </p>
+            // Color-coded circular marker.
+            const marker = L.circleMarker(
+                [lat, lng],
+                {
+                    radius: 10,
+                    color: "#ffffff",
+                    weight: 2,
+                    fillColor: color,
+                    fillOpacity: 0.95
+                }
+            );
 
-                    <p>
-                        <strong>Processing Status:</strong>
-                        ${escapeHtml(incident.processing_status)}
-                    </p>
-                </div>
-            `;
+            marker.bindPopup(
+                createIncidentPopup(incident),
+                {
+                    maxWidth: 320,
+                    minWidth: 220
+                }
+            );
 
-            L.marker([latitude, longitude])
-                .addTo(communityMap)
-                .bindPopup(popupContent);
+            marker.addTo(incidentLayer);
 
-            markerBounds.push([latitude, longitude]);
+            bounds.push([
+                lat,
+                lng
+            ]);
         });
 
-        // Automatically focus on approved incidents.
-        if (markerBounds.length === 1) {
-            communityMap.setView(markerBounds[0], 15);
-        } else if (markerBounds.length > 1) {
-            communityMap.fitBounds(markerBounds, {
+        // heatmap.
+        heatmapLayer.setLatLngs(
+            heatPoints
+        );
+
+        // Zoom map to incident locations.
+        if (bounds.length > 0) {
+            map.fitBounds(bounds, {
                 padding: [40, 40],
-                maxZoom: 15
+                maxZoom: 16
             });
         }
 
     } catch (error) {
         console.error(
-            "Community Map Error:",
+            "Community map error:",
             error
         );
 
         alert(
-            "Unable to load community incidents. Please try again."
+            "Unable to load the Community Issue Map."
         );
     }
 }
 
-// Load incidents when the page opens.
+
+//SUPPORT BUTTON CLICK HANDLER
+
+map.on("popupopen", function(event) {
+    const popupElement =
+        event.popup.getElement();
+
+    if (!popupElement) {
+        return;
+    }
+
+    const button = popupElement.querySelector(
+        ".incident-support-btn"
+    );
+
+    if (!button) {
+        return;
+    }
+
+    button.addEventListener(
+        "click",
+        async function() {
+            const incidentId = Number(
+                button.dataset.incidentId
+            );
+
+            if (
+                !Number.isSafeInteger(incidentId) ||
+                incidentId <= 0
+            ) {
+                alert("Invalid incident ID.");
+                return;
+            }
+
+            const csrfToken = document.querySelector(
+                'meta[name="support-csrf-token"]'
+            )?.content;
+
+            if (!csrfToken) {
+                alert(
+                    "Security token missing. " +
+                    "Please refresh the page."
+                );
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = "Updating...";
+
+            try {
+                const formData = new FormData();
+
+                formData.append(
+                    "incident_id",
+                    String(incidentId)
+                );
+
+                formData.append(
+                    "csrf_token",
+                    csrfToken
+                );
+
+                const response = await fetch(
+                    "api/toggle_incident_supports.php",
+                    {
+                        method: "POST",
+                        body: formData,
+                        credentials: "same-origin"
+                    }
+                );
+
+                const data = await response.json();
+
+                if (
+                    !response.ok ||
+                    !data.success
+                ) {
+                    throw new Error(
+                        data.message ||
+                        "Unable to update support."
+                    );
+                }
+
+                const updatedSupport = {
+                    count: Number(
+                        data.support_count
+                    ),
+                    supported: Boolean(
+                        data.supported
+                    )
+                };
+
+                // local support state.
+                supportData.set(
+                    incidentId,
+                    updatedSupport
+                );
+
+                //visible support count.
+                const countElement =
+                    popupElement.querySelector(
+                        `#support-count-${incidentId}`
+                    );
+
+                if (countElement) {
+                    countElement.textContent =
+                        updatedSupport.count;
+                }
+
+                //button label.
+                button.textContent =
+                    updatedSupport.supported
+                        ? "Remove My Support"
+                        : "I Have the Same Concern";
+
+            } catch (error) {
+                console.error(
+                    "Support update error:",
+                    error
+                );
+
+                const currentSupport =
+                    supportData.get(incidentId);
+
+                button.textContent =
+                    currentSupport?.supported
+                        ? "Remove My Support"
+                        : "I Have the Same Concern";
+
+                alert(
+                    error.message ||
+                    "Unable to update support."
+                );
+
+            } finally {
+                button.disabled = false;
+            }
+        }
+    );
+});
+
+
+//INITIAL LOAD
+
 loadApprovedIncidents();

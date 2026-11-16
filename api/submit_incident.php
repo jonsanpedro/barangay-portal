@@ -1,89 +1,91 @@
 
 <?php
-require_once __DIR__ . "/../config/auth.php";
+// REPLACE EXISTING INCIDENT SUBMISSION API.
+// Keep the original filename if it differs.
+
+require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/../config/email_notifications.php';
 
 // Only authenticated residents can submit incidents.
-$resident = requireRole("resident");
+$resident = requireRole('resident');
 
-// Accept POST requests only.
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    header("Allow: POST");
-    http_response_code(405);
-    header("Content-Type: application/json");
-    echo json_encode([
-        "success" => false,
-        "message" => "Method not allowed."
-    ]);
+header('Content-Type: application/json; charset=utf-8');
+
+function incidentResponse(int $code, array $data): void
+{
+    http_response_code($code);
+    echo json_encode($data);
     exit;
 }
 
-header("Content-Type: application/json; charset=utf-8");
+// Accept POST requests only.
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Allow: POST');
 
+    incidentResponse(405, [
+        'success' => false,
+        'message' => 'Method not allowed.'
+    ]);
+}
 
-/* VERIFY INCIDENT SUBMISSION CSRF TOKEN */
-
-$submittedToken = $_POST["csrf_token"] ?? "";
-$sessionToken = $_SESSION["incident_csrf_token"] ?? "";
+// Validate incident submission CSRF token.
+$submittedToken = $_POST['csrf_token'] ?? '';
+$sessionToken = $_SESSION['incident_csrf_token'] ?? '';
 
 if (
     !is_string($submittedToken) ||
     !is_string($sessionToken) ||
-    $sessionToken === "" ||
+    $sessionToken === '' ||
     !hash_equals($sessionToken, $submittedToken)
 ) {
-    http_response_code(403);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Invalid incident security token. Please refresh the page."
+    incidentResponse(403, [
+        'success' => false,
+        'message' =>
+            'Invalid incident security token. Please refresh the page.'
     ]);
-
-    exit;
 }
 
-
 // Read submitted incident details.
-$category = trim($_POST["category"] ?? "");
-$title = trim($_POST["title"] ?? "");
-$description = trim($_POST["description"] ?? "");
-$locationAddress = trim($_POST["location_address"] ?? "");
+$category = trim((string) ($_POST['category'] ?? ''));
+$title = trim((string) ($_POST['title'] ?? ''));
+$description = trim((string) ($_POST['description'] ?? ''));
+$locationAddress = trim(
+    (string) ($_POST['location_address'] ?? '')
+);
 
 $latitude = filter_var(
-    $_POST["latitude"] ?? null,
+    $_POST['latitude'] ?? null,
     FILTER_VALIDATE_FLOAT
 );
 
 $longitude = filter_var(
-    $_POST["longitude"] ?? null,
+    $_POST['longitude'] ?? null,
     FILTER_VALIDATE_FLOAT
 );
 
 // Categories allowed by the reporting form.
 $allowedCategories = [
-    "Road and Infrastructure",
-    "Street Lighting",
-    "Drainage and Flooding",
-    "Waste Management",
-    "Public Safety",
-    "Other"
+    'Road and Infrastructure',
+    'Street Lighting',
+    'Drainage and Flooding',
+    'Waste Management',
+    'Public Safety',
+    'Other'
 ];
 
 // Validate required text fields.
 if (
     !in_array($category, $allowedCategories, true) ||
-    $title === "" ||
-    $description === "" ||
-    $locationAddress === "" ||
+    $title === '' ||
+    $description === '' ||
+    $locationAddress === '' ||
     mb_strlen($title) > 200 ||
     mb_strlen($locationAddress) > 255
 ) {
-    http_response_code(422);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Please provide valid incident details."
+    incidentResponse(422, [
+        'success' => false,
+        'message' => 'Please provide valid incident details.'
     ]);
-    exit;
 }
 
 // Validate map coordinates.
@@ -95,207 +97,184 @@ if (
     $longitude < -180 ||
     $longitude > 180
 ) {
-    http_response_code(422);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Please select a valid location on the map."
+    incidentResponse(422, [
+        'success' => false,
+        'message' => 'Please select a valid location on the map.'
     ]);
-    exit;
 }
 
-
-// Validate the optional incident photo.
-// Do not move the uploaded file yet.
+// Validate optional incident photo.
 $validatedPhoto = null;
 
-if (isset($_FILES["photo"])) {
+if (isset($_FILES['photo'])) {
 
-    $photo = $_FILES["photo"];
+    $photo = $_FILES['photo'];
 
-    if ($photo["error"] !== UPLOAD_ERR_NO_FILE) {
+    if ($photo['error'] !== UPLOAD_ERR_NO_FILE) {
 
-        if ($photo["error"] !== UPLOAD_ERR_OK) {
-            http_response_code(422);
-            echo json_encode([
-                "success" => false,
-                "message" => "Photo upload failed."
+        if ($photo['error'] !== UPLOAD_ERR_OK) {
+            incidentResponse(422, [
+                'success' => false,
+                'message' => 'Photo upload failed.'
             ]);
-            exit;
         }
 
-        // Maximum file size: 5 MB.
-        $maxPhotoSize = 5 * 1024 * 1024;
-
+        // Maximum photo size: 5 MB.
         if (
-            $photo["size"] <= 0 ||
-            $photo["size"] > $maxPhotoSize
+            $photo['size'] <= 0 ||
+            $photo['size'] > 5 * 1024 * 1024
         ) {
-            http_response_code(422);
-            echo json_encode([
-                "success" => false,
-                "message" => "Photo must not exceed 5 MB."
+            incidentResponse(422, [
+                'success' => false,
+                'message' => 'Photo must not exceed 5 MB.'
             ]);
-            exit;
         }
 
-        // Verify that PHP received a real uploaded file.
-        if (!is_uploaded_file($photo["tmp_name"])) {
-            http_response_code(422);
-            echo json_encode([
-                "success" => false,
-                "message" => "Invalid uploaded file."
+        if (!is_uploaded_file($photo['tmp_name'])) {
+            incidentResponse(422, [
+                'success' => false,
+                'message' => 'Invalid uploaded file.'
             ]);
-            exit;
         }
 
-        // Detect actual MIME type from file content.
+        // Detect actual MIME type.
         $finfo = new finfo(FILEINFO_MIME_TYPE);
-        $mimeType = $finfo->file($photo["tmp_name"]);
+
+        $mimeType = $finfo->file($photo['tmp_name']);
 
         $allowedMimeTypes = [
-            "image/jpeg" => "jpg",
-            "image/png"  => "png",
-            "image/webp" => "webp"
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/webp' => 'webp'
         ];
 
         if (!isset($allowedMimeTypes[$mimeType])) {
-            http_response_code(422);
-            echo json_encode([
-                "success" => false,
-                "message" => "Only JPEG, PNG, and WebP images are allowed."
+            incidentResponse(422, [
+                'success' => false,
+                'message' =>
+                    'Only JPEG, PNG, and WebP images are allowed.'
             ]);
-            exit;
         }
 
-        // Verify that the file can be recognized as an image.
-        if (@getimagesize($photo["tmp_name"]) === false) {
-            http_response_code(422);
-            echo json_encode([
-                "success" => false,
-                "message" => "Invalid image content."
+        // Verify image content.
+        if (@getimagesize($photo['tmp_name']) === false) {
+            incidentResponse(422, [
+                'success' => false,
+                'message' => 'Invalid image content.'
             ]);
-            exit;
         }
 
-        // Store validated information for the next step.
         $validatedPhoto = [
-            "tmp_name" => $photo["tmp_name"],
-            "extension" => $allowedMimeTypes[$mimeType]
+            'tmp_name' => $photo['tmp_name'],
+            'extension' => $allowedMimeTypes[$mimeType]
         ];
     }
 }
 
-
-
-/*
- * Save the incident and optional photo.
- * Use a database transaction to prevent incomplete records.
- */
-
+// Prepare incident saving.
 $inserted = false;
-$referenceNumber = "";
+$referenceNumber = '';
 $photoPath = null;
 $savedPhotoFile = null;
-
 
 try {
 
     // Start database transaction.
     $pdo->beginTransaction();
 
-    
-
-
-/* INCIDENT SUBMISSION RATE LIMIT */
-
-// Lock this resident's user record until the transaction ends.
-// This serializes incident submissions for the same resident.
+    // Lock resident record during submission.
     $lockStmt = $pdo->prepare(
-        "SELECT user_id
-        FROM users
-        WHERE user_id = ?
-        FOR UPDATE"
+        'SELECT user_id
+         FROM users
+         WHERE user_id = ?
+         FOR UPDATE'
     );
 
-$lockStmt->execute([$resident["user_id"]]);
-
-if (!$lockStmt->fetchColumn()) {
-    throw new RuntimeException("Resident account not found.");
-}
-
-// Count successful submissions in the last 60 minutes.
-$limitStmt = $pdo->prepare(
-    "SELECT COUNT(*)
-     FROM incidents
-     WHERE resident_id = ?
-       AND created_at > DATE_SUB(NOW(), INTERVAL 60 MINUTE)"
-);
-
-$limitStmt->execute([$resident["user_id"]]);
-
-$recentReports = (int) $limitStmt->fetchColumn();
-
-if ($recentReports >= 5) {
-    $pdo->rollBack();
-
-    header("Retry-After: 3600");
-    http_response_code(429);
-
-    echo json_encode([
-        "success" => false,
-        "message" =>
-            "You have reached the limit of 5 incident reports per hour. Please try again later."
+    $lockStmt->execute([
+        $resident['user_id']
     ]);
 
-    exit;
-}
+    if (!$lockStmt->fetchColumn()) {
+        throw new RuntimeException(
+            'Resident account not found.'
+        );
+    }
 
+    // Preserve the existing 5 reports/hour limit.
+    $limitStmt = $pdo->prepare(
+        'SELECT COUNT(*)
+         FROM incidents
+         WHERE resident_id = ?
+           AND created_at >
+               DATE_SUB(NOW(), INTERVAL 60 MINUTE)'
+    );
 
-// Save the uploaded photo if provided.
+    $limitStmt->execute([
+        $resident['user_id']
+    ]);
+
+    $recentReports = (int) $limitStmt->fetchColumn();
+
+    if ($recentReports >= 5) {
+
+        $pdo->rollBack();
+
+        header('Retry-After: 3600');
+
+        incidentResponse(429, [
+            'success' => false,
+            'message' =>
+                'You have reached the limit of 5 incident reports per hour. Please try again later.'
+        ]);
+    }
+
+    // Save validated photo if provided.
     if ($validatedPhoto !== null) {
 
         $uploadDirectory =
-            __DIR__ . "/../uploads/incidents/";
+            __DIR__ . '/../uploads/incidents/';
 
-        // Make sure the upload folder exists.
         if (!is_dir($uploadDirectory)) {
             throw new RuntimeException(
-                "Incident upload directory does not exist."
+                'Incident upload directory does not exist.'
             );
         }
 
         // Generate a random filename.
-        $fileName = bin2hex(random_bytes(16)) .
-            "." . $validatedPhoto["extension"];
+        $fileName =
+            bin2hex(random_bytes(16)) .
+            '.' .
+            $validatedPhoto['extension'];
 
-        $savedPhotoFile = $uploadDirectory . $fileName;
+        $savedPhotoFile =
+            $uploadDirectory . $fileName;
 
-        // Move the uploaded file.
         if (!move_uploaded_file(
-            $validatedPhoto["tmp_name"],
+            $validatedPhoto['tmp_name'],
             $savedPhotoFile
         )) {
             throw new RuntimeException(
-                "Unable to save uploaded photo."
+                'Unable to save uploaded photo.'
             );
         }
 
-        // Store relative path in the database.
-        $photoPath = "uploads/incidents/" . $fileName;
+        $photoPath =
+            'uploads/incidents/' . $fileName;
     }
 
     // Generate a unique incident reference number.
     for ($attempt = 0; $attempt < 3; $attempt++) {
 
-        $referenceNumber = "INC-" .
-            date("Ymd") . "-" .
+        $referenceNumber =
+            'INC-' .
+            date('Ymd') .
+            '-' .
             strtoupper(bin2hex(random_bytes(8)));
 
         try {
 
             $stmt = $pdo->prepare(
-                "INSERT INTO incidents (
+                'INSERT INTO incidents (
                     reference_number,
                     resident_id,
                     category,
@@ -305,12 +284,12 @@ if ($recentReports >= 5) {
                     latitude,
                     longitude,
                     photo_path
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
             );
 
             $stmt->execute([
                 $referenceNumber,
-                $resident["user_id"],
+                $resident['user_id'],
                 $category,
                 $title,
                 $description,
@@ -327,12 +306,12 @@ if ($recentReports >= 5) {
 
             // Retry only for duplicate reference numbers.
             $isDuplicateReference =
-                $e->getCode() === "23000" &&
+                $e->getCode() === '23000' &&
                 isset($e->errorInfo[1]) &&
                 (int) $e->errorInfo[1] === 1062 &&
                 str_contains(
-                    $e->errorInfo[2] ?? "",
-                    "reference_number"
+                    $e->errorInfo[2] ?? '',
+                    'reference_number'
                 );
 
             if (!$isDuplicateReference) {
@@ -343,21 +322,21 @@ if ($recentReports >= 5) {
 
     if (!$inserted) {
         throw new RuntimeException(
-            "Unable to generate a unique reference number."
+            'Unable to generate a unique reference number.'
         );
     }
 
-    // Commit the database changes.
+    // Commit incident before sending notification.
     $pdo->commit();
 
 } catch (Throwable $e) {
 
-    // Undo database changes if possible.
+    // Roll back database changes if needed.
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
 
-    // Remove the uploaded photo if saving failed.
+    // Remove uploaded photo if saving failed.
     if (
         $savedPhotoFile !== null &&
         is_file($savedPhotoFile)
@@ -366,28 +345,72 @@ if ($recentReports >= 5) {
     }
 
     error_log(
-        "Incident submission failed: " . $e->getMessage()
+        'Incident submission failed: ' .
+        $e->getMessage()
     );
 
-    http_response_code(500);
+    incidentResponse(500, [
+        'success' => false,
+        'message' =>
+            'Unable to save the incident report.'
+    ]);
+}
 
-    echo json_encode([
-        "success" => false,
-        "message" => "Unable to save the incident report."
+// The incident is now saved successfully.
+// Send confirmation email after commit.
+
+// Assumes users.email stores registered email.
+try {
+
+    $emailStmt = $pdo->prepare(
+        'SELECT email
+         FROM users
+         WHERE user_id = ?
+         LIMIT 1'
+    );
+
+    $emailStmt->execute([
+        $resident['user_id']
     ]);
 
-    exit;
+    $recipient = (string) (
+        $emailStmt->fetchColumn() ?: ''
+    );
+
+    $subject =
+        'Incident Report Received - ' .
+        $referenceNumber;
+
+    $body =
+        "Barangay Chrysanthemum Portal\n\n" .
+        "Your incident report has been received.\n\n" .
+        "Reference: {$referenceNumber}\n" .
+        "Incident: {$title}\n" .
+        "Processing status: Pending\n\n" .
+        "Please log in to the portal to track your report.\n\n" .
+        "This is an automated notification. Do not reply.";
+
+    sendPortalEmail(
+        $recipient,
+        $subject,
+        $body
+    );
+
+} catch (Throwable $e) {
+
+    error_log(
+        'Incident saved, but confirmation email could not be prepared: ' .
+        $e->getMessage()
+    );
 }
 
 // Default database statuses:
 // processing_status = Pending
 // map_approval_status = For Review
 
-echo json_encode([
-    "success" => true,
-    "message" => "Incident report submitted successfully.",
-    "reference_number" => $referenceNumber
+incidentResponse(200, [
+    'success' => true,
+    'message' =>
+        'Incident report submitted successfully.',
+    'reference_number' => $referenceNumber
 ]);
-
-
-

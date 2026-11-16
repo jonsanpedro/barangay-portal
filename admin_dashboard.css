@@ -723,3 +723,230 @@ body {
     outline: 3px solid #F4B83F;
     outline-offset: 3px;
 }
+
+
+/* Incident prioritization */
+
+.priority-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.priority-low {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.priority-medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.priority-high {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.incident-sort-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.incident-sort-form label {
+    font-weight: 600;
+    color: #27358b;
+}
+
+.incident-sort-form select {
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.recent-table-wrapper {
+    overflow-x: auto;
+}
+
+.recent-incidents-table {
+    min-width: 850px;
+}
+
+
+/* Admin Incident Comments and Evidence */
+
+.incident-comments-admin {
+    margin-top: 25px;
+}
+
+.admin-comment-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.admin-reply-badge {
+    background: #dbeafe;
+    color: #1d4ed8;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.admin-comment-content {
+    overflow-wrap: anywhere;
+}
+
+.admin-comment-attachment {
+    margin-top: 15px;
+}
+
+.admin-add-comment-section {
+    margin-top: 35px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.incident-comments-admin .admin-comment-form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    width: 100%;
+    max-width: 650px;
+    margin-top: 20px;
+}
+
+.incident-comments-admin .admin-comment-form label {
+    display: block;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.incident-comments-admin .admin-comment-form textarea {
+    display: block;
+    width: 100%;
+    min-height: 130px;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font: inherit;
+    resize: vertical;
+}
+
+.incident-comments-admin .admin-comment-form input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+    box-sizing: border-box;
+}
+
+.incident-comments-admin .admin-comment-form small {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.incident-comments-admin .admin-comment-form button {
+    align-self: flex-start;
+    background: #27358b;
+    color: white;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.incident-comments-admin .admin-comment-form button:hover {
+    background: #1c286d;
+}
+
+
+/* Admin Reply Form - Layout Fix */
+
+.incident-comments-admin .admin-comment-form {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px;
+    width: 100%;
+    max-width: 650px;
+    margin-top: 20px;
+}
+
+.incident-comments-admin .admin-comment-form label {
+    display: block;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.incident-comments-admin .admin-comment-form textarea {
+    display: block;
+    width: 100%;
+    min-height: 130px;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font: inherit;
+    resize: vertical;
+}
+
+.incident-comments-admin .admin-comment-form input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+    box-sizing: border-box;
+}
+
+.incident-comments-admin .admin-comment-form small {
+    display: block;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.incident-comments-admin .admin-comment-form button {
+    align-self: flex-start;
+    background: #27358b;
+    color: #ffffff;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.incident-comments-admin .admin-comment-form button:hover {
+    background: #1c286d;
+}
+
+/* Comment Cards */
+
+.incident-comments-admin .admin-comment-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #27358b;
+    border-radius: 10px;
+    padding: 18px;
+    margin: 15px 0;
+    overflow-wrap: anywhere;
+}

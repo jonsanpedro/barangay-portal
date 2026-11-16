@@ -102,3 +102,177 @@
     outline: 3px solid #F4B83F;
     outline-offset: 3px;
 }
+
+
+/* Incident Details Page */
+
+.incident-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.incident-back-link {
+    display: inline-block;
+    padding: 10px 16px;
+    background: #27358b;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.incident-back-link:hover {
+    background: #1c286d;
+    color: white;
+}
+
+.incident-details-card {
+    background: #ffffff;
+    padding: 25px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.incident-details-card h3 {
+    margin-top: 25px;
+}
+
+.incident-description {
+    overflow-wrap: anywhere;
+}
+
+.incident-original-photo {
+    margin-top: 25px;
+}
+
+.incident-comments {
+    background: #ffffff;
+    padding: 25px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    margin-top: 30px;
+}
+
+.comments-empty-state {
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.comment-admin-label {
+    background: #dbeafe;
+    color: #1d4ed8;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.comment-content {
+    overflow-wrap: anywhere;
+}
+
+.comment-attachment {
+    margin-top: 15px;
+}
+
+.add-comment-section {
+    margin-top: 35px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.submit-comment-btn {
+    background: #27358b;
+    color: white;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.submit-comment-btn:hover {
+    background: #1c286d;
+}
+
+.incident-bottom-navigation {
+    margin-top: 25px;
+}
+
+
+/* Comments and Evidence Form Layout */
+
+.incident-comments .comment-form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    width: 100%;
+    max-width: 650px;
+    margin-top: 20px;
+}
+
+.incident-comments .comment-form label {
+    display: block;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.incident-comments .comment-form textarea {
+    display: block;
+    width: 100%;
+    min-height: 130px;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font: inherit;
+    resize: vertical;
+}
+
+.incident-comments .comment-form input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+    box-sizing: border-box;
+}
+
+.incident-comments .comment-form small {
+    display: block;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.incident-comments .comment-form button {
+    display: inline-block;
+    align-self: flex-start;
+    background: #27358b;
+    color: #ffffff;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.incident-comments .comment-form button:hover {
+    background: #1c286d;
+}

@@ -1,0 +1,274 @@
+
+/* =========================================
+   INCIDENT MESSAGING SYSTEM
+   Barangay Chrysanthemum Portal
+   ========================================= */
+
+/* CHAT CONTAINER */
+
+.chat-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    height: 380px;
+    max-height: 480px;
+    overflow-y: auto;
+    margin: 20px 0;
+    box-sizing: border-box;
+}
+
+/* CHAT BUBBLES */
+
+.chat-message {
+    max-width: 78%;
+    padding: 14px 16px;
+    border-radius: 14px;
+    overflow-wrap: anywhere;
+    box-sizing: border-box;
+}
+
+.chat-mine {
+    align-self: flex-end;
+    background: #e0e7ff;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-other {
+    align-self: flex-start;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-bottom-left-radius: 4px;
+}
+
+/* MESSAGE HEADER */
+
+.chat-message-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.chat-message-header strong {
+    color: #27358b;
+    font-size: 13px;
+}
+
+.chat-message-header small {
+    color: #64748b;
+    font-size: 12px;
+}
+
+/* MESSAGE TEXT */
+
+.chat-message-text {
+    margin: 0;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    font-size: 14px;
+    color: #1f2937;
+}
+
+/* ATTACHED EVIDENCE */
+
+.chat-evidence-image {
+    display: block;
+    max-width: 100%;
+    max-height: 280px;
+    border-radius: 8px;
+    object-fit: contain;
+    margin-top: 12px;
+}
+
+/* NEW MESSAGE NOTIFICATION */
+
+.new-message-indicator {
+    display: inline-block;
+    background: #f4b83f;
+    color: #1f2937;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 16px;
+}
+
+.new-message-indicator[hidden] {
+    display: none !important;
+}
+
+/* =========================================
+   RESIDENT MESSAGE FORM
+   ========================================= */
+
+.incident-comments .add-comment-section {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.incident-comments .add-comment-section h3 {
+    color: #27358b;
+    font-size: 18px;
+    margin: 0 0 10px;
+}
+
+.incident-comments .add-comment-section > p {
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 20px;
+}
+
+/* FORM LAYOUT */
+
+.incident-comments .comment-form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    max-width: 650px;
+}
+
+/* LABELS */
+
+.incident-comments .comment-form label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-top: 8px;
+}
+
+/* TEXTAREA */
+
+.incident-comments .comment-form textarea {
+    display: block;
+    width: 100%;
+    min-height: 130px;
+    padding: 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #1f2937;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.incident-comments .comment-form textarea:focus {
+    outline: none;
+    border-color: #27358b;
+    box-shadow: 0 0 0 3px rgba(39, 53, 139, 0.12);
+}
+
+/* FILE UPLOAD */
+
+.incident-comments .comment-form input[type="file"] {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    background: #f8fafc;
+    font-size: 13px;
+    color: #334155;
+}
+
+.incident-comments .comment-form input[type="file"]::file-selector-button {
+    padding: 8px 12px;
+    margin-right: 12px;
+    border: none;
+    border-radius: 6px;
+    background: #e0e7ff;
+    color: #27358b;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* HELPER TEXT */
+
+.incident-comments .comment-form small {
+    display: block;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* SEND MESSAGE BUTTON */
+
+.incident-comments .comment-form .submit-comment-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    padding: 12px 24px;
+    margin-top: 10px;
+    background: #27358b;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.incident-comments .comment-form .submit-comment-btn:hover {
+    background: #1c286d;
+}
+
+.incident-comments .comment-form .submit-comment-btn:focus-visible {
+    outline: 3px solid #f4b83f;
+    outline-offset: 3px;
+}
+
+/* =========================================
+   MOBILE RESPONSIVENESS
+   ========================================= */
+
+@media (max-width: 600px) {
+
+    .chat-messages {
+        height: 340px;
+        padding: 12px;
+    }
+
+    .chat-message {
+        max-width: 92%;
+        padding: 12px;
+    }
+
+    .chat-message-header {
+        gap: 6px;
+    }
+
+    .incident-comments .add-comment-section {
+        margin-top: 18px;
+    }
+
+    .incident-comments .comment-form {
+        max-width: 100%;
+    }
+
+    .incident-comments .comment-form textarea {
+        min-height: 120px;
+    }
+
+    .incident-comments .comment-form .submit-comment-btn {
+        width: 100%;
+        align-self: stretch;
+    }
+
+}
