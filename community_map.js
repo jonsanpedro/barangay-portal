@@ -1,3 +1,4 @@
+
 "use strict";
 
 // =====================================================
@@ -7,9 +8,10 @@
 // - Color-coded status markers
 // - Incident heatmap
 // - Resident support / same concern
+// - View Full Incident Details link
 // =====================================================
 
-//INITIALIZE MAP
+// INITIALIZE MAP
 
 const map = L.map("community-map").setView(
     [14.3390453, 121.0432380],
@@ -25,7 +27,7 @@ L.tileLayer(
 ).addTo(map);
 
 
-//MAP LAYERS
+// MAP LAYERS
 
 const incidentLayer = L.layerGroup().addTo(map);
 
@@ -45,13 +47,13 @@ L.control.layers(
 ).addTo(map);
 
 
-//SUPPORT DATA
+// SUPPORT DATA
 
 const supportData = new Map();
 let canSupport = false;
 
 
-//SECURITY HELPERS
+// SECURITY HELPERS
 
 function escapeHtml(value) {
     return String(value ?? "").replace(
@@ -67,7 +69,7 @@ function escapeHtml(value) {
 }
 
 
-//INCIDENT STATUS COLORS
+// INCIDENT STATUS COLORS
 
 function getStatusColor(status) {
     switch (status) {
@@ -99,7 +101,9 @@ async function loadSupportData() {
     );
 
     if (!response.ok) {
-        throw new Error("Unable to load support counts.");
+        throw new Error(
+            "Unable to load support counts."
+        );
     }
 
     const data = await response.json();
@@ -108,7 +112,9 @@ async function loadSupportData() {
         !data.success ||
         !Array.isArray(data.supports)
     ) {
-        throw new Error("Invalid support API response.");
+        throw new Error(
+            "Invalid support API response."
+        );
     }
 
     supportData.clear();
@@ -116,7 +122,10 @@ async function loadSupportData() {
     data.supports.forEach(item => {
         const id = Number(item.incident_id);
 
-        if (!Number.isSafeInteger(id) || id <= 0) {
+        if (
+            !Number.isSafeInteger(id) ||
+            id <= 0
+        ) {
             return;
         }
 
@@ -125,7 +134,8 @@ async function loadSupportData() {
                 0,
                 Number(item.support_count) || 0
             ),
-            supported: Number(item.supported) === 1
+            supported:
+                Number(item.supported) === 1
         });
     });
 
@@ -133,7 +143,7 @@ async function loadSupportData() {
 }
 
 
-//GENERATE POPUP CONTENT
+// GENERATE POPUP CONTENT
 
 function createIncidentPopup(incident) {
     const id = Number(incident.incident_id);
@@ -168,6 +178,22 @@ function createIncidentPopup(incident) {
             </p>
           `;
 
+    // NEW: Link to public incident details.
+    // Only generate links for valid incident IDs.
+    const detailsLink =
+        Number.isSafeInteger(id) && id > 0
+            ? `
+                <p style="margin-top: 12px;">
+                    <a
+                        href="public_incident_details.php?id=${id}"
+                        class="incident-view-details-btn"
+                    >
+                        View Full Incident Details
+                    </a>
+                </p>
+              `
+            : "";
+
     return `
         <div class="incident-popup">
 
@@ -182,7 +208,9 @@ function createIncidentPopup(incident) {
 
             <p>
                 <strong>Location:</strong>
-                ${escapeHtml(incident.location_address)}
+                ${escapeHtml(
+                    incident.location_address
+                )}
             </p>
 
             <p>
@@ -220,12 +248,14 @@ function createIncidentPopup(incident) {
 
             ${supportButton}
 
+            ${detailsLink}
+
         </div>
     `;
 }
 
 
-//LOAD APPROVED INCIDENTS
+// LOAD APPROVED INCIDENTS
 
 async function loadApprovedIncidents() {
     try {
@@ -341,7 +371,7 @@ async function loadApprovedIncidents() {
             ]);
         });
 
-        // heatmap.
+        // Update heatmap.
         heatmapLayer.setLatLngs(
             heatPoints
         );
@@ -367,7 +397,7 @@ async function loadApprovedIncidents() {
 }
 
 
-//SUPPORT BUTTON CLICK HANDLER
+// SUPPORT BUTTON CLICK HANDLER
 
 map.on("popupopen", function(event) {
     const popupElement =
@@ -458,13 +488,13 @@ map.on("popupopen", function(event) {
                     )
                 };
 
-                // local support state.
+                // Update local support state.
                 supportData.set(
                     incidentId,
                     updatedSupport
                 );
 
-                //visible support count.
+                // Update visible support count.
                 const countElement =
                     popupElement.querySelector(
                         `#support-count-${incidentId}`
@@ -475,7 +505,7 @@ map.on("popupopen", function(event) {
                         updatedSupport.count;
                 }
 
-                //button label.
+                // Update button label.
                 button.textContent =
                     updatedSupport.supported
                         ? "Remove My Support"
@@ -508,6 +538,6 @@ map.on("popupopen", function(event) {
 });
 
 
-//INITIAL LOAD
+// INITIAL LOAD
 
 loadApprovedIncidents();

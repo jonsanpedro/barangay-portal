@@ -1,10 +1,19 @@
 <?php
 
+$isLocal = (
+    getenv('APP_ENV') === 'local'
+);
+
+if (!$isLocal) {
+    require __DIR__ . '/database.production.php';
+    return;
+}
+
 $host = "127.0.0.1";
 $port = "3307";
 $dbname = "barangay_portal_db";
 $username = "root";
-$password = ""; // For local XAMPP only, if no password is configured
+$password = "";
 
 try {
     $pdo = new PDO(

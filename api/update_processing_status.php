@@ -127,11 +127,17 @@ try {
             "Please log in to the portal for more details.\n\n" .
             "This is an automated notification. Do not reply.";
 
-        sendPortalEmail(
-            (string) $incident['email'],
-            $subject,
-            $body
-        );
+        try {
+            sendPortalEmail(
+             (string) $incident['email'],
+                $subject,
+                $body
+            );
+            } catch (Throwable $emailError) {
+            error_log(
+            'Status saved, but notification failed.'
+            );
+        }
     }
 
     // Return to admin incident details.
