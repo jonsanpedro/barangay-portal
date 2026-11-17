@@ -2,11 +2,9 @@
 <?php
 require_once __DIR__ . "/config/auth.php";
 
-// Admin access only.
 $admin = requireRole("admin");
 
-function e($value): string
-{
+function e($value): string {
     return htmlspecialchars(
         (string) ($value ?? ""),
         ENT_QUOTES,
@@ -14,8 +12,7 @@ function e($value): string
     );
 }
 
-function statusClass($status): string
-{
+function statusClass($status): string {
     switch ($status) {
         case "Resolved":
             return "status-resolved";
@@ -26,29 +23,42 @@ function statusClass($status): string
     }
 }
 
-function priorityLevel(int $count): string
-{
-    if ($count >= 11) {
-        return "Critical";
-    }
-
-    if ($count >= 6) {
-        return "High";
-    }
-
-    if ($count >= 3) {
-        return "Medium";
-    }
-
+function priorityLevel(int $count): string {
+    if ($count >= 11) return "Critical";
+    if ($count >= 6) return "High";
+    if ($count >= 3) return "Medium";
     return "Low";
 }
 
-function priorityClass(string $priority): string
-{
+function priorityClass(string $priority): string {
     return "priority-" . strtolower($priority);
 }
 
-// Search and filtering.
+function mapClass($status): string {
+    switch ($status) {
+        case "Approved":
+            return "map-approved";
+        case "Rejected":
+            return "map-rejected";
+        default:
+            return "map-pending";
+    }
+}
+
+// =====================================
+// PAGE MODE
+// =====================================
+$section = (string) ($_GET["section"] ?? "");
+
+$isMapView = ($section === "map");
+
+$pageTitle = $isMapView
+    ? "Map Approvals"
+    : "Incident Reports";
+
+// =====================================
+// SEARCH AND FILTERS
+// =====================================
 $search = trim((string) ($_GET["search"] ?? ""));
 $search = substr($search, 0, 100);
 
@@ -65,9 +75,24 @@ if (!in_array($status, $allowedStatuses, true)) {
     $status = "all";
 }
 
+$mapStatus = (string) ($_GET["map_status"] ?? "all");
+
+$allowedMapStatuses = [
+    "all",
+    "For Review",
+    "Approved",
+    "Rejected"
+];
+
+if (!in_array($mapStatus, $allowedMapStatuses, true)) {
+    $mapStatus = "all";
+}
+
+// =====================================
+// LOAD INCIDENTS
+// =====================================
 try {
 
-    // Count supports without duplicating incident rows.
     $sql = "
         SELECT
             i.incident_id,
@@ -97,6 +122,7 @@ try {
 
     $params = [];
 
+    // Search
     if ($search !== "") {
 
         $sql .= "
@@ -117,22 +143,67 @@ try {
         }
     }
 
-    if ($status !== "all") {
+    // Incident processing filter
+    if (!$isMapView && $status !== "all") {
         $sql .= " AND i.processing_status = ?";
         $params[] = $status;
     }
 
-    $sql .= "
-        ORDER BY
-            s.support_count DESC,
-            i.created_at DESC,
-            i.incident_id DESC
-    ";
+    // Map approval filter
+    if ($isMapView && $mapStatus !== "all") {
+        $sql .= " AND i.map_approval_status = ?";
+        $params[] = $mapStatus;
+    }
+
+    // Sorting
+    if ($isMapView) {
+
+        // Pending reviews first
+        $sql .= "
+            ORDER BY
+                CASE i.map_approval_status
+                    WHEN 'For Review' THEN 0
+                    WHEN 'Approved' THEN 1
+                    WHEN 'Rejected' THEN 2
+                    ELSE 3
+                END,
+                i.created_at DESC,
+                i.incident_id DESC
+        ";
+
+    } else {
+
+        // Most supported incidents first
+        $sql .= "
+            ORDER BY
+                support_count DESC,
+                i.created_at DESC,
+                i.incident_id DESC
+        ";
+    }
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
 
     $incidents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Map approval summary
+    $mapSummaryStmt = $pdo->query(
+        "SELECT
+            COUNT(*) AS total,
+            COUNT(CASE
+                WHEN map_approval_status = 'For Review'
+                THEN 1 END) AS pending_count,
+            COUNT(CASE
+                WHEN map_approval_status = 'Approved'
+                THEN 1 END) AS approved_count,
+            COUNT(CASE
+                WHEN map_approval_status = 'Rejected'
+                THEN 1 END) AS rejected_count
+         FROM incidents"
+    );
+
+    $mapSummary = $mapSummaryStmt->fetch(PDO::FETCH_ASSOC);
 
 } catch (PDOException $exception) {
 
@@ -144,7 +215,6 @@ try {
     http_response_code(500);
     exit("Unable to load incident reports.");
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -159,7 +229,7 @@ try {
     >
 
     <title>
-        Incident Reports | Barangay Chrysanthemum
+        <?= e($pageTitle) ?> | Barangay Chrysanthemum
     </title>
 
     <link rel="stylesheet" href="admin_dashboard.css">
@@ -266,7 +336,8 @@ try {
         }
 
         .status-badge,
-        .priority-badge {
+        .priority-badge,
+        .map-badge {
             display: inline-block;
             padding: 6px 11px;
             border-radius: 20px;
@@ -275,7 +346,8 @@ try {
             white-space: nowrap;
         }
 
-        .status-pending {
+        .status-pending,
+        .map-pending {
             background: #fff3cd;
             color: #805c00;
         }
@@ -285,9 +357,15 @@ try {
             color: #1d4ed8;
         }
 
-        .status-resolved {
+        .status-resolved,
+        .map-approved {
             background: #dcfce7;
             color: #166534;
+        }
+
+        .map-rejected {
+            background: #fee2e2;
+            color: #991b1b;
         }
 
         .priority-low {
@@ -349,6 +427,38 @@ try {
             line-height: 1.6;
         }
 
+        .map-stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .map-stat {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-top: 4px solid #f4b83f;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .map-stat p {
+            margin: 0 0 8px;
+            color: #667085;
+            font-size: 13px;
+        }
+
+        .map-stat strong {
+            color: #27358b;
+            font-size: 26px;
+        }
+
+        @media (max-width: 1000px) {
+            .map-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         @media (max-width: 768px) {
             .incidents-toolbar {
                 flex-direction: column;
@@ -359,6 +469,12 @@ try {
                 width: 100%;
             }
         }
+
+        @media (max-width: 480px) {
+            .map-stats {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -366,51 +482,25 @@ try {
 
 <div class="admin-layout">
 
-    <!-- ADMIN SIDEBAR -->
-
-    <aside class="sidebar">
-
-        <div class="sidebar-brand">
-            <h2>BC Portal</h2>
-            <p>Administration</p>
-        </div>
-
-        <nav
-            class="sidebar-nav"
-            aria-label="Admin navigation"
-        >
-
-            <a href="admin_dashboard.php">
-                Dashboard Overview
-            </a>
-
-            <a
-                href="admin_incidents.php"
-                class="active"
-            >
-                Incident Reports
-            </a>
-
-            <a href="admin_announcements.php">
-                Announcements
-            </a>
-
-        </nav>
-
-    </aside>
+    <!-- SHARED ADMIN SIDEBAR -->
+    <?php require __DIR__ . "/includes/admin_sidebar.php"; ?>
 
     <!-- MAIN CONTENT -->
-
     <main class="main-content">
 
         <header class="dashboard-header">
 
             <div>
-                <h1>Incident Reports</h1>
+                <h1><?= e($pageTitle) ?></h1>
 
                 <p>
-                    Review, prioritize, and manage
-                    incidents submitted by barangay residents.
+                    <?php if ($isMapView): ?>
+                        Review incident visibility on the
+                        public Community Issue Map.
+                    <?php else: ?>
+                        Review, prioritize, and manage
+                        incidents submitted by barangay residents.
+                    <?php endif; ?>
                 </p>
             </div>
 
@@ -420,32 +510,89 @@ try {
 
         </header>
 
-        <!-- INCIDENT MANAGEMENT -->
+        <?php if ($isMapView): ?>
+
+            <!-- MAP APPROVAL SUMMARY -->
+            <section class="map-stats">
+
+                <article class="map-stat">
+                    <p>Total Incidents</p>
+                    <strong><?= (int) $mapSummary["total"] ?></strong>
+                </article>
+
+                <article class="map-stat">
+                    <p>Pending Map Review</p>
+                    <strong><?= (int) $mapSummary["pending_count"] ?></strong>
+                </article>
+
+                <article class="map-stat">
+                    <p>Approved for Map</p>
+                    <strong><?= (int) $mapSummary["approved_count"] ?></strong>
+                </article>
+
+                <article class="map-stat">
+                    <p>Rejected for Map</p>
+                    <strong><?= (int) $mapSummary["rejected_count"] ?></strong>
+                </article>
+
+            </section>
+
+        <?php endif; ?>
 
         <section class="recent-reports">
 
-            <h2>All Incident Reports</h2>
+            <h2>
+                <?= $isMapView
+                    ? "Incident Map Approval Records"
+                    : "All Incident Reports" ?>
+            </h2>
 
             <p>
-                Search incidents, review processing status,
-                and monitor community support.
+                <?php if ($isMapView): ?>
+                    Review map approval status and open
+                    individual incidents to manage visibility.
+                <?php else: ?>
+                    Search incidents, review processing status,
+                    and monitor community support.
+                <?php endif; ?>
             </p>
 
             <div class="priority-notice">
-                <strong>Community-Based Prioritization:</strong>
-                Incidents with more resident supports appear
-                first. This ranking is based on support count,
-                not emergency severity. Barangay personnel
-                must still assess urgency and public safety.
+
+                <?php if ($isMapView): ?>
+
+                    <strong>Public Map Visibility:</strong>
+                    Only approved incidents should appear
+                    on the public Community Issue Map.
+                    Open an incident's details to review
+                    or update its map approval status.
+
+                <?php else: ?>
+
+                    <strong>Community-Based Prioritization:</strong>
+                    Incidents with more resident supports appear
+                    first. This ranking is based on support count,
+                    not emergency severity. Barangay personnel
+                    must still assess urgency and public safety.
+
+                <?php endif; ?>
+
             </div>
 
             <!-- SEARCH AND FILTER -->
-
             <form
                 method="GET"
                 action="admin_incidents.php"
                 class="incidents-toolbar"
             >
+
+                <?php if ($isMapView): ?>
+                    <input
+                        type="hidden"
+                        name="section"
+                        value="map"
+                    >
+                <?php endif; ?>
 
                 <div class="filter-group">
 
@@ -463,37 +610,67 @@ try {
 
                 </div>
 
-                <div class="filter-group">
+                <?php if ($isMapView): ?>
 
-                    <label for="status">
-                        Processing Status
-                    </label>
+                    <div class="filter-group">
 
-                    <select
-                        id="status"
-                        name="status"
-                    >
+                        <label for="map_status">
+                            Map Approval Status
+                        </label>
 
-                        <?php foreach (
-                            $allowedStatuses as $option
-                        ): ?>
+                        <select
+                            id="map_status"
+                            name="map_status"
+                        >
 
-                            <option
-                                value="<?= e($option) ?>"
-                                <?= $status === $option
-                                    ? "selected"
-                                    : "" ?>
-                            >
-                                <?= $option === "all"
-                                    ? "All Statuses"
-                                    : e($option) ?>
-                            </option>
+                            <?php foreach ($allowedMapStatuses as $option): ?>
 
-                        <?php endforeach; ?>
+                                <option
+                                    value="<?= e($option) ?>"
+                                    <?= $mapStatus === $option ? "selected" : "" ?>
+                                >
+                                    <?= $option === "all"
+                                        ? "All Map Statuses"
+                                        : e($option) ?>
+                                </option>
 
-                    </select>
+                            <?php endforeach; ?>
 
-                </div>
+                        </select>
+
+                    </div>
+
+                <?php else: ?>
+
+                    <div class="filter-group">
+
+                        <label for="status">
+                            Processing Status
+                        </label>
+
+                        <select
+                            id="status"
+                            name="status"
+                        >
+
+                            <?php foreach ($allowedStatuses as $option): ?>
+
+                                <option
+                                    value="<?= e($option) ?>"
+                                    <?= $status === $option ? "selected" : "" ?>
+                                >
+                                    <?= $option === "all"
+                                        ? "All Statuses"
+                                        : e($option) ?>
+                                </option>
+
+                            <?php endforeach; ?>
+
+                        </select>
+
+                    </div>
+
+                <?php endif; ?>
 
                 <button
                     type="submit"
@@ -503,7 +680,9 @@ try {
                 </button>
 
                 <a
-                    href="admin_incidents.php"
+                    href="<?= $isMapView
+                        ? 'admin_incidents.php?section=map'
+                        : 'admin_incidents.php' ?>"
                     class="reset-link"
                 >
                     Reset
@@ -511,17 +690,12 @@ try {
 
             </form>
 
-            <!-- REPORT COUNT -->
-
             <p class="report-count">
                 Total reports found:
-                <strong>
-                    <?= count($incidents) ?>
-                </strong>
+                <strong><?= count($incidents) ?></strong>
             </p>
 
             <!-- INCIDENT TABLE -->
-
             <div class="table-wrapper">
 
                 <table class="incidents-table">
@@ -542,126 +716,104 @@ try {
 
                     <tbody>
 
-                        <?php if (empty($incidents)): ?>
+                    <?php if (empty($incidents)): ?>
+
+                        <tr>
+                            <td colspan="9" class="empty-message">
+                                No incident reports found.
+                            </td>
+                        </tr>
+
+                    <?php else: ?>
+
+                        <?php foreach ($incidents as $incident): ?>
+
+                            <?php
+                            $supportCount = (int) $incident["support_count"];
+                            $priority = priorityLevel($supportCount);
+                            ?>
 
                             <tr>
-                                <td
-                                    colspan="9"
-                                    class="empty-message"
-                                >
-                                    No incident reports found.
+
+                                <td>
+                                    <?= e($incident["reference_number"]) ?>
                                 </td>
+
+                                <td>
+                                    <span class="incident-title">
+                                        <?= e($incident["title"]) ?>
+                                    </span>
+
+                                    <span class="incident-category">
+                                        <?= e($incident["category"]) ?>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <?= e(
+                                        $incident["first_name"] . " " .
+                                        $incident["last_name"]
+                                    ) ?>
+                                </td>
+
+                                <td>
+                                    <span
+                                        class="status-badge <?= e(
+                                            statusClass(
+                                                $incident["processing_status"]
+                                            )
+                                        ) ?>"
+                                    >
+                                        <?= e($incident["processing_status"]) ?>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span
+                                        class="map-badge <?= e(
+                                            mapClass(
+                                                $incident["map_approval_status"]
+                                            )
+                                        ) ?>"
+                                    >
+                                        <?= e($incident["map_approval_status"]) ?>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="support-count">
+                                        <?= $supportCount ?>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span
+                                        class="priority-badge <?= e(
+                                            priorityClass($priority)
+                                        ) ?>"
+                                    >
+                                        <?= e($priority) ?>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <?= e($incident["created_at"]) ?>
+                                </td>
+
+                                <td>
+                                    <a
+                                        href="admin_incident_details.php?id=<?= (int) $incident["incident_id"] ?>"
+                                        class="view-button"
+                                    >
+                                        View Details
+                                    </a>
+                                </td>
+
                             </tr>
 
-                        <?php else: ?>
+                        <?php endforeach; ?>
 
-                            <?php foreach (
-                                $incidents as $incident
-                            ): ?>
-
-                                <?php
-                                $supportCount = (int)
-                                    $incident["support_count"];
-
-                                $priority = priorityLevel(
-                                    $supportCount
-                                );
-                                ?>
-
-                                <tr>
-
-                                    <td>
-                                        <?= e(
-                                            $incident["reference_number"]
-                                        ) ?>
-                                    </td>
-
-                                    <td>
-
-                                        <span class="incident-title">
-                                            <?= e(
-                                                $incident["title"]
-                                            ) ?>
-                                        </span>
-
-                                        <span class="incident-category">
-                                            <?= e(
-                                                $incident["category"]
-                                            ) ?>
-                                        </span>
-
-                                    </td>
-
-                                    <td>
-                                        <?= e(
-                                            $incident["first_name"] .
-                                            " " .
-                                            $incident["last_name"]
-                                        ) ?>
-                                    </td>
-
-                                    <td>
-
-                                        <span
-                                            class="status-badge <?= e(
-                                                statusClass(
-                                                    $incident["processing_status"]
-                                                )
-                                            ) ?>"
-                                        >
-                                            <?= e(
-                                                $incident["processing_status"]
-                                            ) ?>
-                                        </span>
-
-                                    </td>
-
-                                    <td>
-                                        <?= e(
-                                            $incident["map_approval_status"]
-                                        ) ?>
-                                    </td>
-
-                                    <td>
-                                        <span class="support-count">
-                                            <?= $supportCount ?>
-                                        </span>
-                                    </td>
-
-                                    <td>
-
-                                        <span
-                                            class="priority-badge <?= e(
-                                                priorityClass($priority)
-                                            ) ?>"
-                                        >
-                                            <?= e($priority) ?>
-                                        </span>
-
-                                    </td>
-
-                                    <td>
-                                        <?= e(
-                                            $incident["created_at"]
-                                        ) ?>
-                                    </td>
-
-                                    <td>
-
-                                        <a
-                                            href="admin_incident_details.php?id=<?= (int) $incident["incident_id"] ?>"
-                                            class="view-button"
-                                        >
-                                            View Details
-                                        </a>
-
-                                    </td>
-
-                                </tr>
-
-                            <?php endforeach; ?>
-
-                        <?php endif; ?>
+                    <?php endif; ?>
 
                     </tbody>
 
@@ -674,6 +826,35 @@ try {
     </main>
 
 </div>
+
+<!-- LOGOUT -->
+<script>
+"use strict";
+
+const logoutForm = document.getElementById("admin-logout-form");
+
+if (logoutForm) {
+    logoutForm.addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        try {
+            const response = await fetch("api/logout.php", {
+                method: "POST",
+                credentials: "same-origin"
+            });
+
+            if (!response.ok) {
+                throw new Error("Logout failed.");
+            }
+
+            window.location.href = "index.html";
+
+        } catch (error) {
+            alert("Unable to log out. Please try again.");
+        }
+    });
+}
+</script>
 
 </body>
 </html>

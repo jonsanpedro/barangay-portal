@@ -1,3 +1,13 @@
+
+/* =========================================
+   BARANGAY CHRYSANTHEMUM PORTAL
+   HOMEPAGE STYLES
+========================================= */
+
+/* =========================================
+   1. ROOT VARIABLES
+========================================= */
+
 :root {
     --primary-blue: #27358B;
     --primary-blue-dark: #1C286D;
@@ -6,167 +16,425 @@
 
     --background-color: #FAFAF7;
     --card-background: #FFFFFF;
+
     --text-color: #121B2C;
     --text-muted: #64748B;
     --border-color: #E5E0D8;
+
+    --shadow-sm: 0 4px 15px rgba(25, 40, 85, 0.06);
+    --shadow-md: 0 12px 35px rgba(25, 40, 85, 0.10);
+
+    --radius-md: 12px;
+    --radius-lg: 18px;
+}
+
+/* =========================================
+   2. GLOBAL RESET
+========================================= */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+    scroll-behavior: smooth;
 }
 
 body {
     margin: 0;
-    background-color: var(--background-color);
+    background: var(--background-color);
     font-family: Arial, sans-serif;
     color: var(--text-color);
+    line-height: 1.6;
 }
 
+button,
+input {
+    font: inherit;
+}
 
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
 
+a {
+    transition: color 0.2s ease;
+}
+
+img {
+    max-width: 100%;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+:focus-visible {
+    outline: 3px solid var(--accent-yellow);
+    outline-offset: 3px;
+}
+
+/* =========================================
+   3. HEADER AND NAVIGATION
+========================================= */
 
 header {
-    background-color: var(--primary-blue);
-    color: #FFFFFF;
-    padding: 12px 40px;
+    position: relative;
+    z-index: 100;
 
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    gap: 30px;
 
-    border-bottom: 3px solid var(--accent-yellow);
+    width: 100%;
+    padding: 18px 5%;
+
+    background: var(--primary-blue);
+    border-bottom: 4px solid var(--accent-yellow);
+    color: #FFFFFF;
 }
 
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 0;
+}
 
-header h1 {
-    margin-bottom: 5px;
-    font-size: 2em;
+.brand-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 54px;
+    height: 54px;
+
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 14px;
+
+    color: var(--accent-yellow);
+    font-size: 27px;
+}
+
+.brand-copy {
+    min-width: 0;
 }
 
 .brand h1 {
-    font-family: Georgia, serif;
-    font-size: 20px;
     margin: 0;
+
+    font-family: Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.25;
+
     color: #FFFFFF;
 }
 
 .brand p {
-    font-size: 11px;
-    letter-spacing: 2px;
+    margin: 5px 0 0;
+
     color: var(--accent-yellow);
-    margin: 4px 0 0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
 }
 
 nav {
-    margin-top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
-nav a {
+nav a,
+nav button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 42px;
+    padding: 10px 15px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: transparent;
     color: #FFFFFF;
+
+    font-size: 13px;
+    font-weight: 600;
     text-decoration: none;
-    margin-left: 20px;
-    font-weight: normal;
+    white-space: nowrap;
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
 }
 
-nav a:not(.active):hover {
+nav a:hover,
+nav button:hover {
+    background: rgba(255, 255, 255, 0.12);
     color: var(--accent-yellow);
 }
 
 nav a.active {
-    background-color: var(--accent-yellow);
-    color: var(--primary-blue-dark);
-    padding: 10px 16px;
-    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.14);
+    color: #FFFFFF;
 }
 
+nav #open-login,
+nav #logout-button {
+    background: var(--accent-yellow);
+    color: var(--primary-blue-dark);
+    font-weight: 700;
+}
+
+nav #open-login:hover,
+nav #logout-button:hover {
+    background: #FFD06C;
+    color: var(--primary-blue-dark);
+}
+
+#account-name {
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px;
+}
+
+/* =========================================
+   4. HERO SECTION
+========================================= */
+
 .hero {
-    padding: 80px 20px;
-    text-align: center;
+    position: relative;
+    overflow: hidden;
+
+    padding: 85px 5% 95px;
+
+    background:
+        radial-gradient(
+            circle at 5% 10%,
+            rgba(139, 203, 232, 0.16),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #FFFFFF 0%,
+            #F7F9FF 60%,
+            #F0F4FF 100%
+        );
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+
+    width: 350px;
+    height: 350px;
+
+    top: -200px;
+    right: -100px;
+
+    border-radius: 50%;
+    border: 1px solid rgba(39, 53, 139, 0.08);
+
+    pointer-events: none;
 }
 
 .hero-content {
-    max-width: 1200px;
-    margin: 0 auto;
+    position: relative;
+    z-index: 1;
 
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
+    grid-template-columns:
+        minmax(0, 1.05fr)
+        minmax(0, 0.95fr);
+
     align-items: center;
+    gap: 65px;
+
+    width: 100%;
+    max-width: 1250px;
+    margin: 0 auto;
 }
 
 .hero-text {
+    min-width: 0;
     text-align: left;
 }
 
 .hero-label {
-    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+
+    margin: 0 0 20px;
+    padding: 9px 15px;
+
+    background: #EDF1FF;
+    border: 1px solid #DDE5FF;
+    border-radius: 30px;
+
     color: var(--primary-blue);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+}
+
+.hero-label i {
+    color: #D69B1E;
+    font-size: 15px;
 }
 
 .hero h2 {
+    margin: 0 0 24px;
+
+    color: var(--text-color);
     font-family: Georgia, serif;
-    font-size: 48px;
-    font-weight: normal;
-    line-height: 1.2;
-    margin-bottom: 20px;
+    font-size: clamp(35px, 4vw, 56px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -1px;
+}
+
+.hero h2 span {
+    display: block;
     color: var(--primary-blue);
 }
 
-.hero-text p {
-    font-size: 16px;
-    line-height: 1.7;
-    color: #394457;
-}
+.hero-text > p:not(.hero-label) {
+    max-width: 540px;
+    margin: 0;
 
+    color: #526078;
+    font-size: 16px;
+    line-height: 1.9;
+}
 
 .hero-buttons {
     display: flex;
-    margin-top: 30px;
+    align-items: center;
     justify-content: flex-start;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 12px;
+
+    margin-top: 32px;
 }
 
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-sizing: border-box;
-    min-height: 46px;
-    border: 2px solid transparent;
-    padding: 12px 20px;
-    margin: 0;
-    text-decoration: none;
-    border-radius: 6px;
-    font-weight: bold;
+    gap: 9px;
 
-    transition: background-color 0.2s ease,
-                color 0.2s ease;
+    min-height: 49px;
+    padding: 13px 18px;
+
+    border: 2px solid transparent;
+    border-radius: 10px;
+
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.btn i {
+    font-size: 16px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
 }
 
 .btn-primary {
-    background-color: var(--primary-blue);
+    background: var(--primary-blue);
     border-color: var(--primary-blue);
     color: #FFFFFF;
+
+    box-shadow: 0 8px 20px rgba(39, 53, 139, 0.18);
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-blue-dark);
+    background: var(--primary-blue-dark);
     border-color: var(--primary-blue-dark);
+    color: #FFFFFF;
 }
 
 .btn-secondary {
-    border: 2px solid var(--primary-blue);
+    background: #FFFFFF;
+    border-color: #D8DEED;
     color: var(--primary-blue);
 }
 
 .btn-secondary:hover {
-    background-color: var(--primary-blue);
-    color: #FFFFFF;
+    background: #F1F4FF;
+    color: var(--primary-blue-dark);
+}
+
+.btn-outline {
+    background: var(--accent-yellow);
+    border-color: var(--accent-yellow);
+    color: var(--primary-blue-dark);
+}
+
+.btn-outline:hover {
+    background: #E8AA30;
+    border-color: #E8AA30;
+    color: var(--primary-blue-dark);
+}
+
+/* HERO IMAGE */
+
+.hero-image {
+    position: relative;
+    min-width: 0;
+}
+
+.hero-image::before {
+    content: "";
+    position: absolute;
+
+    inset: 20px -15px -15px 20px;
+    z-index: -1;
+
+    background: var(--accent-yellow);
+    border-radius: 20px;
+    opacity: 0.65;
 }
 
 .hero-image img {
-    width: 100%;
-    height: 450px;
-    object-fit: cover;
-    border-radius: 12px;
     display: block;
+
+    width: 100%;
+    height: 440px;
+
+    object-fit: cover;
+    border-radius: 20px;
+
+    box-shadow: 0 20px 50px rgba(28, 40, 109, 0.18);
+
     transition: opacity 0.5s ease-in-out;
 }
 
@@ -174,232 +442,400 @@ nav a.active {
     opacity: 0;
 }
 
+.hero-image-badge {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    z-index: 2;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+
+    max-width: calc(100% - 40px);
+    padding: 12px 15px;
+
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+
+    color: var(--primary-blue-dark);
+    font-size: 12px;
+    font-weight: 700;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+}
+
+.hero-image-badge i {
+    color: var(--primary-blue);
+    font-size: 18px;
+}
+
+/* =========================================
+   5. SHARED SECTION STYLING
+========================================= */
+
+.how-it-works,
+.portal-features,
+.announcements {
+    padding: 80px 5%;
+    text-align: center;
+}
+
+.how-it-works > h2,
+.portal-features > h2,
+.announcements > h2 {
+    margin: 12px 0 14px;
+
+    color: var(--primary-blue-dark);
+    font-family: Georgia, serif;
+    font-size: clamp(28px, 3vw, 38px);
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.how-it-works > p,
+.portal-features > p,
+.announcements > p {
+    max-width: 620px;
+    margin: 0 auto;
+
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.section-kicker {
+    display: inline-block;
+
+    color: #A47714;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+/* =========================================
+   6. HOW IT WORKS
+========================================= */
 
 .how-it-works {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 60px 20px;
-    text-align: center;
+    background: #FFFFFF;
 }
 
 .steps-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    margin-top: 40px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 25px;
+
+    max-width: 1200px;
+    margin: 45px auto 0;
 }
 
 .step-card {
-    background-color: var(--card-background);
-    border: 1px solid var(--border-color);
-    border-top: 4px solid var(--accent-yellow);
-    border-radius: 12px;
-    padding: 30px;
+    position: relative;
+
+    padding: 35px 30px;
+
+    background: #FFFFFF;
+    border: 1px solid #E8ECF4;
+    border-radius: var(--radius-lg);
+
+    text-align: left;
+
+    box-shadow: var(--shadow-sm);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
-.how-it-works h2 {
+.step-card::before {
+    content: "";
+    position: absolute;
+
+    top: 0;
+    left: 30px;
+    right: 30px;
+
+    height: 4px;
+
+    background: var(--accent-yellow);
+    border-radius: 0 0 6px 6px;
+}
+
+.step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.step-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 60px;
+    height: 60px;
+
+    margin-bottom: 20px;
+
+    background: #EEF2FF;
+    border-radius: 16px;
+
     color: var(--primary-blue);
+    font-size: 27px;
 }
 
 .step-card h3 {
-    font-size: 22px;
-    color: var(--primary-blue);
-    margin-bottom: 15px;
+    margin: 0 0 13px;
+
+    color: var(--primary-blue-dark);
+    font-size: 20px;
+    font-weight: 800;
 }
 
+.step-card p {
+    margin: 0;
+
+    color: #5E6B80;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+/* =========================================
+   7. PORTAL FEATURES
+========================================= */
+
 .portal-features {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 60px 20px;
-    text-align: center;
+    background: #F7F9FE;
 }
 
 .features-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 30px;
-    margin-top: 40px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+
+    max-width: 1200px;
+    margin: 45px auto 0;
 }
 
 .feature-card {
-    background-color: var(--card-background);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 30px;
+    position: relative;
+
+    display: block;
+    min-width: 0;
+
+    padding: 35px;
+
+    background: #FFFFFF;
+    border: 1px solid #E6EAF3;
+    border-radius: var(--radius-lg);
+
+    color: inherit;
     text-align: left;
-    transition: transform 0.2s ease,
-                box-shadow 0.2s ease;
+    text-decoration: none;
+
+    box-shadow: var(--shadow-sm);
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.feature-card:visited {
+    color: inherit;
 }
 
 .feature-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(39, 53, 139, 0.10);
+    transform: translateY(-5px);
+    border-color: #CBD5F1;
+    box-shadow: var(--shadow-md);
+    text-decoration: none;
+}
+
+.feature-card > i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 65px;
+    height: 65px;
+
+    margin-bottom: 23px;
+
+    background: #EEF2FF;
+    border-radius: 17px;
+
+    color: var(--primary-blue);
+    font-size: 30px;
 }
 
 .feature-card h3 {
-    font-size: 22px;
-    color: var(--primary-blue);
-    margin-bottom: 15px;
+    margin: 0 0 12px;
+
+    color: var(--primary-blue-dark);
+    font-size: 21px;
+    font-weight: 800;
 }
 
 .feature-card p {
-    font-size: 16px;
-    line-height: 1.6;
-    color: #394457;
+    max-width: 490px;
+    margin: 0;
+
+    color: #5E6B80;
+    font-size: 14px;
+    line-height: 1.8;
 }
 
-.feature-card i {
-    font-size: 32px;
-    color: var(--primary-blue);
-    display: block;
-    margin-bottom: 20px;
-}
-
-.portal-features h2 {
-    color: var(--primary-blue);
-}
+/* =========================================
+   8. ANNOUNCEMENTS
+========================================= */
 
 .announcements {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 60px 20px;
-    text-align: center;
+    background: #FFFFFF;
+    scroll-margin-top: 20px;
 }
 
 .announcements-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    margin-top: 40px;
-}
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
 
-.announcement-card {
-    background-color: var(--card-background);
-    border: 1px solid var(--border-color);
-    border-left: 4px solid var(--accent-yellow);
-    border-radius: 12px;
-    padding: 30px;
+    max-width: 1200px;
+    margin: 45px auto 0;
+
     text-align: left;
 }
 
+.announcements-container > p {
+    grid-column: 1 / -1;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.announcement-card {
+    min-width: 0;
+    padding: 30px;
+
+    background: #FFFFFF;
+    border: 1px solid #E8ECF4;
+    border-left: 4px solid var(--accent-yellow);
+    border-radius: var(--radius-md);
+
+    box-shadow: var(--shadow-sm);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.announcement-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
 
 .announcement-date {
-    font-size: 13px;
-    font-weight: bold;
-    color: var(--primary-blue);
-    margin-top: 0;
-    margin-bottom: 15px;
-}
+    display: inline-block;
 
+    margin: 0 0 16px;
+    padding: 7px 11px;
+
+    background: #FFF7E2;
+    border-radius: 7px;
+
+    color: #986B0A;
+    font-size: 12px;
+    font-weight: 700;
+}
 
 .announcement-card h3 {
-    font-size: 22px;
-    color: var(--primary-blue);
-    margin-bottom: 15px;
-}
+    margin: 0 0 13px;
 
-.announcements h2 {
-    color: var(--primary-blue);
+    color: var(--primary-blue-dark);
+    font-size: 20px;
+    line-height: 1.4;
 }
 
 .announcement-card p {
-    font-size: 16px;
-    line-height: 1.6;
-    color: #394457;
+    margin: 0;
+
+    color: #5E6B80;
+    font-size: 14px;
+    line-height: 1.8;
 }
 
-@media (max-width: 768px) {
-
-    
-    header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 20px;
-    }
-
-    
-    nav {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 12px;
-    }
-
-    nav a {
-        margin-left: 0;
-    }
-
-    
-    .hero {
-        padding: 40px 20px;
-    }
-
-    .hero-content {
-        grid-template-columns: 1fr;
-    }
-
-    .hero h2 {
-        font-size: 36px;
-        line-height: 1.2;
-    }
-
-    
-    .hero-image img {
-        height: 250px;
-    }
-
-    
-    .steps-container {
-        grid-template-columns: 1fr;
-    }
-
+.announcement-card a {
+    color: var(--primary-blue);
+    font-weight: 700;
 }
 
-@media (max-width: 768px) {
-    .features-container {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .announcements-container {
-        grid-template-columns: 1fr;
-    }
-}
+/* =========================================
+   9. FOOTER
+========================================= */
 
 .site-footer {
-    background-color: var(--primary-blue);
+    padding: 65px 5% 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #27358B 0%,
+            #1C286D 100%
+        );
+
+    border-top: 5px solid var(--accent-yellow);
     color: #FFFFFF;
-    padding: 50px 20px 20px;
-    border-top: 4px solid var(--accent-yellow);
 }
 
 .footer-container {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 60px;
+
     max-width: 1200px;
     margin: 0 auto;
-
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 40px;
 }
 
-.footer-brand h3,
-.footer-links h3 {
+.footer-brand h3 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin: 0 0 16px;
+
+    color: #FFFFFF;
+    font-size: 21px;
+}
+
+.footer-brand h3 i {
     color: var(--accent-yellow);
+    font-size: 25px;
 }
 
 .footer-brand p {
-    color: #D0D8E4;
+    max-width: 400px;
+    margin: 0;
+
+    color: #D7DEF1;
     font-size: 14px;
-    line-height: 1.6;
+    line-height: 1.8;
+}
+
+.footer-links h3 {
+    margin: 0 0 18px;
+
+    color: var(--accent-yellow);
+    font-size: 17px;
 }
 
 .footer-links a {
     display: block;
-    color: #D0D8E4;
-    text-decoration: none;
-    margin-bottom: 12px;
+    width: fit-content;
+
+    margin-bottom: 13px;
+
+    color: #D7DEF1;
     font-size: 14px;
+    text-decoration: none;
 }
 
 .footer-links a:hover {
@@ -409,29 +845,27 @@ nav a.active {
 
 .footer-bottom {
     max-width: 1200px;
-    margin: 30px auto 0;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    margin: 45px auto 0;
+    padding-top: 23px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+
     text-align: center;
 }
 
 .footer-bottom p {
-    font-size: 13px;
-    color: #D0D8E4;
+    margin: 0;
+
+    color: #C9D3E9;
+    font-size: 12px;
 }
 
-@media (max-width: 768px) {
-    .footer-container {
-        grid-template-columns: 1fr;
-        gap: 30px;
-    }
-}
-
-
-/* LOGIN AND REGISTRATION MODALS */
+/* =========================================
+   10. MODAL BACKDROP
+========================================= */
 
 .modal[hidden] {
-    display: none;
+    display: none !important;
 }
 
 .modal {
@@ -440,24 +874,41 @@ nav a.active {
     z-index: 1000;
 
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.65);
+    padding: 24px;
+    overflow-y: auto;
+
+    background: rgba(15, 23, 42, 0.72);
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
+
+body.modal-open {
+    overflow: hidden;
+}
+
+/* =========================================
+   11. BASIC MODAL FALLBACK
+========================================= */
 
 .modal-content {
     position: relative;
+
     width: 100%;
     max-width: 460px;
-    max-height: 90vh;
+    max-height: calc(100dvh - 48px);
+
+    margin: auto;
+    padding: 35px;
+
     overflow-y: auto;
 
-    background-color: var(--card-background);
+    background: #FFFFFF;
     border-top: 5px solid var(--accent-yellow);
     border-radius: 12px;
-    padding: 35px;
 
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
@@ -465,7 +916,6 @@ nav a.active {
 .modal-content h2 {
     color: var(--primary-blue);
     text-align: center;
-    margin-top: 10px;
 }
 
 .modal-content > p {
@@ -474,125 +924,934 @@ nav a.active {
     line-height: 1.5;
 }
 
-.close-modal {
+/* =========================================
+   12. MODERN LOGIN AND REGISTRATION MODALS
+========================================= */
+
+.modal .modern-modal {
+    position: relative;
+
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+
+    width: 100%;
+    max-width: 1050px;
+    max-height: calc(100dvh - 48px);
+
+    margin: auto;
+    padding: 0;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    background: #FFFFFF;
+    border: none;
+    border-radius: 20px;
+
+    box-shadow: 0 25px 75px rgba(0, 0, 0, 0.28);
+}
+
+.modal .registration-modal {
+    max-width: 1150px;
+}
+
+/* =========================================
+   13. LEFT MODAL BRANDING PANEL
+========================================= */
+
+.modal-branding {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+
+    min-width: 0;
+    min-height: 620px;
+
+    padding: 45px 32px 30px;
+
+    overflow: hidden;
+    color: #FFFFFF;
+
+    background:
+        radial-gradient(
+            circle at 20% 15%,
+            rgba(255, 255, 255, 0.08),
+            transparent 35%
+        ),
+        linear-gradient(
+            145deg,
+            #344596 0%,
+            #27358B 35%,
+            #172158 100%
+        );
+}
+
+.modal-branding::before,
+.modal-branding::after {
+    content: "";
     position: absolute;
-    top: 12px;
-    right: 15px;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.modal-branding::before {
+    width: 300px;
+    height: 300px;
+
+    right: -150px;
+    bottom: -150px;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.modal-branding::after {
+    width: 210px;
+    height: 210px;
+
+    right: -105px;
+    bottom: -105px;
+
+    border: 1px solid rgba(244, 184, 63, 0.28);
+}
+
+/* =========================================
+   14. MODAL CENTER BRANDING CONTENT
+========================================= */
+
+.modal-brand-center {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    max-width: 100%;
+
+    margin: auto 0;
+    text-align: center;
+}
+
+/* LOGO */
+
+.modal-seal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 125px;
+    height: 125px;
+
+    margin: 0 auto 25px;
+    padding: 6px;
+
+    background: #FFFFFF;
+    border: 3px solid var(--accent-yellow);
+    border-radius: 50%;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+}
+
+.modal-seal img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+    object-position: center;
+    border-radius: 50%;
+}
+
+/* MODAL EYEBROW */
+
+.modal .modal-eyebrow {
+    width: 100%;
+    margin: 0 0 20px;
+
+    color: var(--accent-yellow) !important;
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+/* BARANGAY NAME */
+
+.modal .modal-brand-center h2 {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+
+    margin: 0;
+
+    color: #FFFFFF !important;
+
+    font-family: Arial, sans-serif;
+    font-size: clamp(25px, 3vw, 38px);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: 0.3px;
+
+    text-align: center;
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+.modal .modal-brand-center h2 span {
+    display: block;
+    width: 100%;
+
+    color: var(--accent-yellow) !important;
+    text-align: center;
+}
+
+.modal-divider {
+    flex-shrink: 0;
+
+    width: 65px;
+    height: 4px;
+
+    margin: 25px auto;
+
+    background: var(--accent-yellow);
+    border-radius: 5px;
+}
+
+.modal .modal-brand-center h3 {
+    margin: 0 0 15px;
+
+    color: #FFFFFF !important;
+
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.modal .modal-brand-center > p:last-child {
+    width: 100%;
+    max-width: 340px;
+
+    margin: 0 auto;
+
+    color: rgba(255, 255, 255, 0.82);
+
+    font-size: 14px;
+    line-height: 1.8;
+    text-align: center;
+}
+
+/* MODAL BRAND FOOTER */
+
+.modal-brand-footer {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    width: 100%;
+    margin: 25px 0 0;
+
+    color: rgba(255, 255, 255, 0.78);
+
+    font-size: 11px;
+    text-align: center;
+}
+
+.modal-dot {
+    flex-shrink: 0;
+
+    width: 8px;
+    height: 8px;
+
+    background: var(--accent-yellow);
+    border-radius: 50%;
+}
+
+/* =========================================
+   15. RIGHT MODAL FORM PANEL
+========================================= */
+
+.modal-form-panel {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 0;
+    padding: 45px 48px;
+
+    background: #FFFFFF;
+}
+
+.modal-form-inner {
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+}
+
+/* CLOSE BUTTON */
+
+.modal .close-modal {
+    position: absolute;
+
+    top: 15px;
+    right: 20px;
+    z-index: 5;
+
+    padding: 5px 10px;
 
     background: transparent;
     border: none;
-    font-size: 28px;
+
     color: #64748B;
+    font-size: 28px;
+
     cursor: pointer;
 }
 
-.close-modal:hover {
+.modal .close-modal:hover {
     color: var(--primary-blue);
 }
 
+/* FORM SYMBOL */
+
+.modal-symbol {
+    display: grid;
+    place-items: center;
+
+    width: 60px;
+    height: 60px;
+
+    margin: 0 auto 20px;
+
+    background: #EEF2FF;
+    border-radius: 17px;
+
+    color: var(--primary-blue);
+
+    font-size: 30px;
+    font-weight: 700;
+}
+
+/* FORM HEADING */
+
+.modal .modal-form-inner > h2 {
+    margin: 0 0 10px;
+
+    color: var(--text-color);
+
+    font-size: 27px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.modal-description {
+    margin: 0 0 28px;
+
+    color: var(--text-muted);
+
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* =========================================
+   16. MODAL FORM FIELDS
+========================================= */
+
 .modal .form-group {
-    margin-bottom: 18px;
+    min-width: 0;
+    margin-bottom: 19px;
 }
 
 .modal .form-group label {
     display: block;
+
     margin-bottom: 8px;
-    font-weight: 600;
+
+    color: #334155;
+
+    font-size: 13px;
+    font-weight: 700;
 }
 
 .modal .form-group input {
+    display: block;
+
     width: 100%;
-    padding: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
+    min-height: 48px;
+
+    padding: 12px 14px;
+
+    background: #F8FAFC;
+
+    border: 1px solid #E2E8F0;
+    border-radius: 9px;
+
+    color: var(--text-color);
+
+    font-family: Arial, sans-serif;
     font-size: 14px;
+}
+
+.modal .form-group input::placeholder {
+    color: #94A3B8;
 }
 
 .modal .form-group input:focus {
-    outline: 2px solid var(--primary-blue);
-    outline-offset: 1px;
+    outline: none;
+
+    background: #FFFFFF;
+    border-color: var(--primary-blue);
+
+    box-shadow: 0 0 0 3px rgba(39, 53, 139, 0.12);
 }
 
-.modal-submit {
-    width: 100%;
-    padding: 12px;
-    background-color: var(--primary-blue);
-    color: #FFFFFF;
+/* PASSWORD FIELDS */
+
+.modal-password-field {
+    position: relative;
+}
+
+.modal .modal-password-field input {
+    padding-right: 70px;
+}
+
+.modal-password-toggle {
+    position: absolute;
+
+    top: 50%;
+    right: 8px;
+
+    transform: translateY(-50%);
+
+    padding: 8px;
+
+    background: transparent;
     border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
+    border-radius: 5px;
 
-.modal-submit:hover {
-    background-color: var(--primary-blue-dark);
-}
-
-.modal-switch {
-    margin-top: 20px;
-    font-size: 14px;
-}
-
-.modal-switch a {
     color: var(--primary-blue);
-    font-weight: 600;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.modal-password-toggle:hover {
+    background: #EEF2FF;
+}
+
+/* =========================================
+   17. MODAL SUBMIT BUTTON
+========================================= */
+
+.modal .modal-submit {
+    display: block;
+
+    width: 100%;
+    min-height: 49px;
+
+    margin-top: 3px;
+    padding: 13px;
+
+    background: var(--primary-blue);
+
+    border: none;
+    border-radius: 9px;
+
+    color: #FFFFFF;
+
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.modal .modal-submit:hover {
+    background: var(--primary-blue-dark);
+}
+
+.modal .modal-submit:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+/* =========================================
+   18. MODAL LINKS AND SECURITY NOTICE
+========================================= */
+
+.modal .modal-switch {
+    margin: 23px 0;
+
+    color: var(--text-muted);
+
+    font-size: 13px;
+    text-align: center;
+}
+
+.modal .modal-switch a {
+    color: var(--primary-blue);
+    font-weight: 700;
     text-decoration: none;
 }
 
-.modal-switch a:hover {
+.modal .modal-switch a:hover {
     text-decoration: underline;
 }
 
-body.modal-open {
-    overflow: hidden;
+.modal-security {
+    padding: 15px;
+
+    background: #FFFBEB;
+
+    border: 1px solid #FDE68A;
+    border-radius: 9px;
+
+    color: #92400E;
+
+    font-size: 12px;
+    line-height: 1.6;
 }
 
-@media (max-width: 480px) {
+.modal-bottom-caption {
+    margin: 20px 0 0;
+
+    color: #94A3B8;
+
+    font-size: 11px;
+    text-align: center;
+}
+
+/* =========================================
+   19. REGISTRATION FORM GRID
+========================================= */
+
+.modal-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+}
+
+.modal-full {
+    grid-column: 1 / -1;
+}
+
+.modal-password-hint {
+    margin: -4px 0 18px;
+
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+/* =========================================
+   20. TABLET RESPONSIVENESS
+========================================= */
+
+@media (max-width: 1050px) {
+
+    header {
+        padding: 16px 4%;
+    }
+
+    .brand h1 {
+        font-size: 19px;
+    }
+
+    nav {
+        gap: 4px;
+    }
+
+    nav a,
+    nav button {
+        padding: 9px 11px;
+        font-size: 12px;
+    }
+
+    .hero-content {
+        gap: 40px;
+    }
+
+    .hero h2 {
+        font-size: 42px;
+    }
+
+    .hero-image img {
+        height: 400px;
+    }
+}
+
+@media (max-width: 900px) {
+
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+    }
+
+    nav {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .hero {
+        padding: 65px 5%;
+    }
+
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: 45px;
+    }
+
+    .hero-text {
+        text-align: center;
+    }
+
+    .hero-label {
+        justify-content: center;
+    }
+
+    .hero h2 {
+        max-width: 700px;
+        margin: 0 auto 22px;
+    }
+
+    .hero-text > p:not(.hero-label) {
+        margin: 0 auto;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+
+    .hero-image {
+        width: 100%;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .hero-image img {
+        height: 400px;
+    }
+
+    .steps-container {
+        gap: 18px;
+    }
+
+    .step-card {
+        padding: 28px 22px;
+    }
+
+    .modal .modern-modal {
+        grid-template-columns: 1fr;
+        max-width: 620px;
+    }
+
+    .modal-branding {
+        min-height: auto;
+        padding: 30px 24px;
+    }
+
+    .modal-brand-center {
+        margin: 0 auto;
+    }
+
+    .modal-seal {
+        width: 85px;
+        height: 85px;
+        margin-bottom: 16px;
+    }
+
+    .modal .modal-brand-center h2 {
+        font-size: 26px;
+    }
+
+    .modal .modal-brand-center h3 {
+        font-size: 18px;
+    }
+
+    .modal .modal-brand-center > p:last-child {
+        font-size: 12px;
+    }
+
+    .modal-divider {
+        margin: 16px auto;
+    }
+
+    .modal-brand-footer {
+        margin-top: 20px;
+    }
+
+    .modal-form-panel {
+        padding: 35px 30px;
+    }
+}
+
+/* =========================================
+   21. MOBILE RESPONSIVENESS
+========================================= */
+
+@media (max-width: 768px) {
+
+    header {
+        padding: 18px 20px;
+    }
+
+    .brand-mark {
+        width: 46px;
+        height: 46px;
+        font-size: 23px;
+    }
+
+    .brand h1 {
+        font-size: 18px;
+    }
+
+    .brand p {
+        font-size: 10px;
+    }
+
+    nav {
+        gap: 7px;
+    }
+
+    nav a,
+    nav button {
+        min-height: 39px;
+        padding: 9px 12px;
+        font-size: 12px;
+    }
+
+    .hero {
+        padding: 55px 20px 65px;
+    }
+
+    .hero h2 {
+        font-size: 37px;
+    }
+
+    .hero-image img {
+        height: 320px;
+    }
+
+    .how-it-works,
+    .portal-features,
+    .announcements {
+        padding: 65px 20px;
+    }
+
+    .steps-container,
+    .features-container,
+    .announcements-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .step-card,
+    .feature-card,
+    .announcement-card {
+        padding: 28px;
+    }
+
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: 35px;
+    }
+
+    .site-footer {
+        padding: 55px 20px 25px;
+    }
+}
+
+@media (max-width: 520px) {
+
+    .brand {
+        gap: 10px;
+    }
+
+    .brand-mark {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+    }
+
+    .brand h1 {
+        font-size: 16px;
+    }
+
+    .brand p {
+        font-size: 9px;
+        letter-spacing: 0;
+    }
+
+    nav {
+        gap: 5px;
+    }
+
+    nav a,
+    nav button {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+
+    .hero {
+        padding: 45px 18px 55px;
+    }
+
+    .hero-label {
+        font-size: 11px;
+    }
+
+    .hero h2 {
+        font-size: 31px;
+        letter-spacing: -0.5px;
+    }
+
+    .hero-text > p:not(.hero-label) {
+        font-size: 14px;
+        line-height: 1.8;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .hero-buttons .btn {
+        width: 100%;
+    }
+
+    .hero-image::before {
+        inset: 12px -7px -7px 12px;
+    }
+
+    .hero-image img {
+        height: 250px;
+        border-radius: 15px;
+    }
+
+    .hero-image-badge {
+        left: 10px;
+        bottom: 10px;
+
+        max-width: calc(100% - 20px);
+        padding: 9px 11px;
+
+        font-size: 10px;
+    }
+
+    .how-it-works,
+    .portal-features,
+    .announcements {
+        padding: 55px 18px;
+    }
+
+    .how-it-works > h2,
+    .portal-features > h2,
+    .announcements > h2 {
+        font-size: 28px;
+    }
+
+    .step-card,
+    .feature-card,
+    .announcement-card {
+        padding: 24px;
+    }
+
     .modal {
         padding: 12px;
     }
 
+    .modal .modern-modal {
+        grid-template-columns: 1fr;
+        max-height: calc(100dvh - 24px);
+        border-radius: 15px;
+    }
+
+    .modal-branding {
+        padding: 24px 18px;
+    }
+
+    .modal-seal {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 15px;
+    }
+
+    .modal .modal-eyebrow {
+        margin-bottom: 12px;
+        font-size: 9px;
+        letter-spacing: 2px;
+    }
+
+    .modal .modal-brand-center h2 {
+        font-size: 22px;
+        line-height: 1.25;
+    }
+
+    .modal .modal-brand-center h3 {
+        font-size: 17px;
+    }
+
+    .modal-divider {
+        margin: 14px auto;
+    }
+
+    .modal-brand-footer {
+        margin-top: 18px;
+        font-size: 10px;
+    }
+
+    .modal-form-panel {
+        padding: 35px 20px 28px;
+    }
+
+    .modal-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-full {
+        grid-column: auto;
+    }
+
+    .modal .modal-form-inner > h2 {
+        font-size: 24px;
+    }
+
     .modal-content {
+        max-height: calc(100dvh - 24px);
         padding: 30px 20px;
-        max-height: 95vh;
     }
 }
 
+/* =========================================
+   22. ACCESSIBILITY
+========================================= */
 
-/* Community Map Hero Button */
+@media (prefers-reduced-motion: reduce) {
 
-.hero-buttons .btn-outline {
-    display: inline-block;
-    padding: 12px 20px;
-    background-color: #F4B83F;
-    color: #121B2C;
-    border: 2px solid #F4B83F;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    text-align: center;
-    transition: background-color 0.2s ease;
-}
-
-.hero-buttons .btn-outline:hover {
-    background-color: #E5A92E;
-    border-color: #E5A92E;
-    color: #121B2C;
-}
-
-/* Keep feature cards styled as cards */
-.feature-card {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-}
-
-.feature-card:visited {
-    color: inherit;
-}
-
-.feature-card:hover {
-    text-decoration: none;
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
 }

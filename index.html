@@ -1,239 +1,40 @@
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barangay Chrysanthemum Portal</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+    <title>Barangay Chrysanthemum Portal</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
 </head>
+
 <body>
-    
-    
+
+    <!-- HEADER -->
     <header>
         <div class="brand">
-        <h1>Barangay Chrysanthemum</h1>
-        <p>Incident and Public Service Request Portal</p>
-        </div>
+            <span class="brand-mark" aria-hidden="true">
+                <i class="bi bi-buildings"></i>
+            </span>
 
-    <nav>
-        
-        <a href="index.html" class="active" aria-current="page">Home</a>
-        <a href="community_map.php">Community Map</a>
-        <a href="#announcements">Announcements</a>
-        <a href="#login-modal" id="open-login">Login</a>
-        <span id="account-name" hidden></span>
-
-        <button type="button" id="logout-button" hidden>
-        Logout
-        </button>
-
-    </nav>
-</header>
-
-
-<main>
-    <section class="hero">
-        <div class="hero-content">
-
-            <!-- LEFT COLUMN: Hero Text -->
-            <div class="hero-text">
-
-                <p class="hero-label">
-                    Your Community, Our Priority
-                </p>
-
-                <h2>Welcome to Barangay Chrysanthemum</h2>
-
-                <p>
-                    Report community concerns, track requests,
-                    and stay updated with the latest barangay
-                    announcements.
-                </p>
-
-                <div class="hero-buttons">
-
-                    <a href="report_incident.php"
-                        id="report-incident"
-                        class="btn btn-primary">
-                        Report an Incident
-                    </a>
-
-                    <a href="my_incidents.php"
-                        id="track-my-report"
-                        class="btn btn-secondary">
-                        Track My Report
-                    </a>
-
-                    <a href="community_map.php" class="btn btn-outline">
-                        Community Map
-                    </a>
-
-                </div>
-
+            <div class="brand-copy">
+                <h1>Barangay Chrysanthemum</h1>
+                <p>Incident and Public Service Request Portal</p>
             </div>
-
-            <!-- RIGHT COLUMN: Barangay Image -->
-            <div class="hero-image">
-
-                <img
-                    src="images/barangay-1.jpg"
-                    alt="Barangay Chrysanthemum community activity"
-                >
-
-            </div>
-
-        </div>
-    </section>
-
-    
-    <section class="how-it-works">
-
-        <h2>How It Works</h2>
-
-        <p>
-            Report and monitor community concerns
-            in three simple steps.
-        </p>
-
-    <div class="steps-container">
-
-        <div class="step-card">
-            <h3>01. Submit</h3>
-            <p>Submit an incident report or public service request through the portal.</p>
         </div>
 
-        <div class="step-card">
-            <h3>02. Review</h3>
-            <p>Barangay personnel review the report and approve incidents before they appear on the public Community Issue Map.</p>
-        </div>
-
-        <div class="step-card">
-            <h3>03. Track</h3>
-            <p>Monitor the progress of your report as barangay personnel provide status updates.</p>
-        </div>
-
-    </div>
-
-
-    </section>
-
-    
-<!-- Portal Features -->
-<section class="portal-features">
-
-    <h2>Explore Our Portal Features</h2>
-
-    <p>
-        Discover what you can do through our community portal.
-    </p>
-
-    <div class="features-container">
-
-        <!-- Feature 1: Report an Incident -->
-        <a href="report_incident.php"
-           class="feature-card"
-           data-resident-destination="report_incident.php">
-
-            <i class="bi bi-file-earmark-plus"></i>
-
-            <h3>Report an Incident</h3>
-
-            <p>
-                Submit incident reports or public service
-                requests to notify barangay personnel
-                about community concerns.
-            </p>
-
-        </a>
-
-        <!-- Feature 2: Community Issue Map -->
-        <a href="community_map.php"
-           class="feature-card">
-
-            <i class="bi bi-geo-alt"></i>
-
-            <h3>Community Issue Map</h3>
-
-            <p>
-                View incidents that have been reviewed
-                and approved by barangay personnel
-                on the community map.
-            </p>
-
-        </a>
-
-        <!-- Feature 3: Track Your Report -->
-        <a href="my_incidents.php"
-           class="feature-card"
-           data-resident-destination="my_incidents.php">
-
-            <i class="bi bi-clipboard-check"></i>
-
-            <h3>Track Your Report</h3>
-
-            <p>
-                Monitor the progress of your submitted
-                report and check its current status.
-            </p>
-
-        </a>
-
-        <!-- Feature 4: Barangay Announcements -->
-        <a href="#announcements"
-           class="feature-card">
-
-            <i class="bi bi-megaphone"></i>
-
-            <h3>Barangay Announcements</h3>
-
-            <p>
-                Stay informed about important barangay
-                news, updates, and community advisories.
-            </p>
-
-        </a>
-
-    </div>
-
-</section>
-
-        <!-- Barangay Announcements -->
-        <section class="announcements" id="announcements">
-
-            <h2>Latest Barangay Announcements</h2>
-
-        <p>
-            Stay informed about community news
-            and important updates.
-        </p>
-
-        <div class="announcements-container"
-            id="announcements-container">
-
-            <p>Loading announcements...</p>
-
-    </div>
-
-</section>
-
-</main>
-
-
-
-<footer class="site-footer">
-    <div class="footer-container">
-
-        <div class="footer-brand">
-            <h3>Barangay Chrysanthemum</h3>
-            <p>Incident and Public Service Request Portal</p>
-        </div>
-
-        <div class="footer-links">
-            <h3>Quick Links</h3>
-
-            <a href="index.html">Home</a>
+        <nav aria-label="Main navigation">
+            <a href="index.html" class="active" aria-current="page">
+                Home
+            </a>
 
             <a href="community_map.php">
                 Community Map
@@ -242,189 +43,763 @@
             <a href="#announcements">
                 Announcements
             </a>
+
+            <a href="#login-modal" id="open-login">
+                Login
+            </a>
+
+            <span id="account-name" hidden></span>
+
+            <button type="button" id="logout-button" hidden>
+                Logout
+            </button>
+        </nav>
+    </header>
+
+
+    <!-- MAIN CONTENT -->
+    <main>
+
+        <!-- HERO SECTION -->
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-content">
+
+                <div class="hero-text">
+                    <p class="hero-label">
+                        <i class="bi bi-stars" aria-hidden="true"></i>
+                        Your Community, Our Priority
+                    </p>
+
+                    <h2 id="hero-title">
+                        Welcome to
+                        <span>Barangay Chrysanthemum</span>
+                    </h2>
+
+                    <p>
+                        Report community concerns, track requests,
+                        and stay updated with the latest barangay
+                        announcements.
+                    </p>
+
+                    <div class="hero-buttons">
+
+                        <a
+                            href="report_incident.php"
+                            id="report-incident"
+                            class="btn btn-primary"
+                        >
+                            <i class="bi bi-file-earmark-plus" aria-hidden="true"></i>
+                            Report an Incident
+                        </a>
+
+                        <a
+                            href="my_incidents.php"
+                            id="track-my-report"
+                            class="btn btn-secondary"
+                        >
+                            <i class="bi bi-clipboard-check" aria-hidden="true"></i>
+                            Track My Report
+                        </a>
+
+                        <a
+                            href="community_map.php"
+                            class="btn btn-outline"
+                        >
+                            <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                            Community Map
+                        </a>
+
+                    </div>
+                </div>
+
+                <div class="hero-image">
+                    <span class="hero-image-badge">
+                        <i class="bi bi-people-fill" aria-hidden="true"></i>
+                        Building a better community together
+                    </span>
+
+                    <img
+                        src="images/barangay-1.jpg"
+                        alt="Barangay Chrysanthemum community activity"
+                    >
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- HOW IT WORKS -->
+        <section class="how-it-works">
+
+            <span class="section-kicker">SIMPLE PROCESS</span>
+
+            <h2>How It Works</h2>
+
+            <p>
+                Report and monitor community concerns
+                in three simple steps.
+            </p>
+
+            <div class="steps-container">
+
+                <div class="step-card">
+                    <span class="step-icon" aria-hidden="true">
+                        <i class="bi bi-pencil-square"></i>
+                    </span>
+
+                    <h3>01. Submit</h3>
+
+                    <p>
+                        Submit an incident report or public
+                        service request through the portal.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-icon" aria-hidden="true">
+                        <i class="bi bi-shield-check"></i>
+                    </span>
+
+                    <h3>02. Review</h3>
+
+                    <p>
+                        Barangay personnel review the report
+                        and approve incidents before they appear
+                        on the public Community Issue Map.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-icon" aria-hidden="true">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </span>
+
+                    <h3>03. Track</h3>
+
+                    <p>
+                        Monitor the progress of your report
+                        as barangay personnel provide status updates.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- PORTAL FEATURES -->
+        <section class="portal-features">
+
+            <span class="section-kicker">WHAT YOU CAN DO</span>
+
+            <h2>Explore Our Portal Features</h2>
+
+            <p>
+                Discover what you can do through
+                our community portal.
+            </p>
+
+            <div class="features-container">
+
+                <a
+                    href="report_incident.php"
+                    class="feature-card"
+                    data-resident-destination="report_incident.php"
+                >
+                    <i class="bi bi-file-earmark-plus" aria-hidden="true"></i>
+
+                    <h3>Report an Incident</h3>
+
+                    <p>
+                        Submit incident reports or public service
+                        requests to notify barangay personnel
+                        about community concerns.
+                    </p>
+                </a>
+
+                <a
+                    href="community_map.php"
+                    class="feature-card"
+                >
+                    <i class="bi bi-geo-alt" aria-hidden="true"></i>
+
+                    <h3>Community Issue Map</h3>
+
+                    <p>
+                        View incidents that have been reviewed
+                        and approved by barangay personnel
+                        on the community map.
+                    </p>
+                </a>
+
+                <a
+                    href="my_incidents.php"
+                    class="feature-card"
+                    data-resident-destination="my_incidents.php"
+                >
+                    <i class="bi bi-clipboard-check" aria-hidden="true"></i>
+
+                    <h3>Track Your Report</h3>
+
+                    <p>
+                        Monitor the progress of your submitted
+                        report and check its current status.
+                    </p>
+                </a>
+
+                <a
+                    href="#announcements"
+                    class="feature-card"
+                >
+                    <i class="bi bi-megaphone" aria-hidden="true"></i>
+
+                    <h3>Barangay Announcements</h3>
+
+                    <p>
+                        Stay informed about important barangay
+                        news, updates, and community advisories.
+                    </p>
+                </a>
+
+            </div>
+        </section>
+
+
+        <!-- ANNOUNCEMENTS -->
+        <section class="announcements" id="announcements">
+
+            <span class="section-kicker">COMMUNITY UPDATES</span>
+
+            <h2>Latest Barangay Announcements</h2>
+
+            <p>
+                Stay informed about community news
+                and important updates.
+            </p>
+
+            <div
+                class="announcements-container"
+                id="announcements-container"
+            >
+                <p>Loading announcements...</p>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+
+        <div class="footer-container">
+
+            <div class="footer-brand">
+                <h3>
+                    <i class="bi bi-buildings" aria-hidden="true"></i>
+                    Barangay Chrysanthemum
+                </h3>
+
+                <p>
+                    Incident and Public Service Request Portal
+                </p>
+            </div>
+
+            <div class="footer-links">
+
+                <h3>Quick Links</h3>
+
+                <a href="index.html">Home</a>
+
+                <a href="community_map.php">
+                    Community Map
+                </a>
+
+                <a href="#announcements">
+                    Announcements
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <p>
+                &copy; 2026 Barangay Chrysanthemum.
+                All rights reserved.
+            </p>
+        </div>
+
+    </footer>
+
+
+    <!-- RESIDENT LOGIN MODAL -->
+    <div
+        id="login-modal"
+        class="modal"
+        hidden
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="login-title"
+    >
+
+        <div class="modal-content modern-modal">
+
+            <section class="modal-branding">
+
+                <div class="modal-brand-center">
+
+                    <div class="modal-seal">
+                        <img
+                            src="images/barangay_logo_updated.png"
+                            alt="Barangay Chrysanthemum Logo"
+                        >
+                    </div>
+
+                    <p class="modal-eyebrow">
+                        OFFICIAL BARANGAY PORTAL
+                    </p>
+
+                    <h2>
+                        BARANGAY
+                        <span>CHRYSANTHEMUM</span>
+                    </h2>
+
+                    <div class="modal-divider"></div>
+
+                    <h3>Resident Portal</h3>
+
+                    <p>
+                        Incident Reporting and Public Service
+                        Request Management System
+                    </p>
+
+                </div>
+
+                <p class="modal-brand-footer">
+                    <span class="modal-dot"></span>
+                    Serving Our Community Through Technology
+                </p>
+
+            </section>
+
+
+            <section class="modal-form-panel">
+
+                <button
+                    type="button"
+                    class="close-modal"
+                    aria-label="Close login"
+                >&times;</button>
+
+                <div class="modal-form-inner">
+
+                    <div class="modal-symbol" aria-hidden="true">
+                        ♙
+                    </div>
+
+                    <h2 id="login-title">Welcome Back</h2>
+
+                    <p class="modal-description">
+                        Sign in to report incidents and track
+                        your service requests.
+                    </p>
+
+                    <form id="login-form" method="POST">
+
+                        <div class="form-group">
+
+                            <label for="modal-email">
+                                Email Address
+                            </label>
+
+                            <input
+                                type="email"
+                                id="modal-email"
+                                name="email"
+                                placeholder="Enter your email address"
+                                autocomplete="username"
+                                required
+                            >
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="modal-password">
+                                Password
+                            </label>
+
+                            <div class="modal-password-field">
+
+                                <input
+                                    type="password"
+                                    id="modal-password"
+                                    name="password"
+                                    placeholder="Enter your password"
+                                    autocomplete="current-password"
+                                    required
+                                >
+
+                                <button
+                                    type="button"
+                                    class="modal-password-toggle"
+                                    data-password-target="modal-password"
+                                    aria-label="Show password"
+                                >
+                                    Show
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="modal-submit"
+                        >
+                            Sign In to Resident Portal
+                        </button>
+
+                    </form>
+
+                    <p class="modal-switch">
+                        Don't have an account?
+                        <a
+                            href="#register-modal"
+                            id="switch-to-register"
+                        >
+                            Register here
+                        </a>
+                    </p>
+
+                    <div class="modal-security">
+                        🔒 Your account is intended for accessing
+                        resident services and tracking submitted reports.
+                    </div>
+
+                    <p class="modal-bottom-caption">
+                        Barangay Chrysanthemum Resident Access
+                    </p>
+
+                </div>
+
+            </section>
+
         </div>
 
     </div>
 
-    <div class="footer-bottom">
-        <p>
-            &copy; 2026 Barangay Chrysanthemum.
-            All rights reserved.
-        </p>
+
+    <!-- RESIDENT REGISTRATION MODAL -->
+    <div
+        id="register-modal"
+        class="modal"
+        hidden
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="register-title"
+    >
+
+        <div class="modal-content modern-modal registration-modal">
+
+            <section class="modal-branding">
+
+                <div class="modal-brand-center">
+
+                    <div class="modal-seal">
+                        <img
+                            src="images/barangay_logo_updated.png"
+                            alt="Barangay Chrysanthemum Logo"
+                        >
+                    </div>
+
+                    <p class="modal-eyebrow">
+                        OFFICIAL BARANGAY PORTAL
+                    </p>
+
+                    <h2>
+                        BARANGAY
+                        <span>CHRYSANTHEMUM</span>
+                    </h2>
+
+                    <div class="modal-divider"></div>
+
+                    <h3>Resident Registration</h3>
+
+                    <p>
+                        Incident Reporting and Public Service
+                        Request Management System
+                    </p>
+
+                </div>
+
+                <p class="modal-brand-footer">
+                    <span class="modal-dot"></span>
+                    Serving Our Community Through Technology
+                </p>
+
+            </section>
+
+
+            <section class="modal-form-panel">
+
+                <button
+                    type="button"
+                    class="close-modal"
+                    aria-label="Close registration"
+                >&times;</button>
+
+                <div class="modal-form-inner">
+
+                    <div class="modal-symbol" aria-hidden="true">
+                        +
+                    </div>
+
+                    <h2 id="register-title">
+                        Create Your Account
+                    </h2>
+
+                    <p class="modal-description">
+                        Register to report incidents and track
+                        your service requests.
+                    </p>
+
+                    <form id="register-form" method="POST">
+
+                        <div class="modal-form-grid">
+
+                            <div class="form-group">
+
+                                <label for="reg-first-name">
+                                    First Name *
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="reg-first-name"
+                                    name="first_name"
+                                    placeholder="Enter first name"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="reg-last-name">
+                                    Last Name *
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="reg-last-name"
+                                    name="last_name"
+                                    placeholder="Enter last name"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group modal-full">
+
+                                <label for="reg-email">
+                                    Email Address *
+                                </label>
+
+                                <input
+                                    type="email"
+                                    id="reg-email"
+                                    name="email"
+                                    placeholder="Enter your email address"
+                                    autocomplete="email"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group modal-full">
+
+                                <label for="reg-contact">
+                                    Contact Number *
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    id="reg-contact"
+                                    name="contact_number"
+                                    placeholder="09XXXXXXXXX"
+                                    pattern="09[0-9]{9}"
+                                    maxlength="11"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group modal-full">
+
+                                <label for="reg-address">
+                                    Barangay Address *
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="reg-address"
+                                    name="address"
+                                    placeholder="House no., street, subdivision"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="reg-password">
+                                    Password *
+                                </label>
+
+                                <div class="modal-password-field">
+
+                                    <input
+                                        type="password"
+                                        id="reg-password"
+                                        name="password"
+                                        placeholder="Create a password"
+                                        minlength="8"
+                                        autocomplete="new-password"
+                                        required
+                                    >
+
+                                    <button
+                                        type="button"
+                                        class="modal-password-toggle"
+                                        data-password-target="reg-password"
+                                        aria-label="Show password"
+                                    >
+                                        Show
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="reg-confirm-password">
+                                    Confirm Password *
+                                </label>
+
+                                <div class="modal-password-field">
+
+                                    <input
+                                        type="password"
+                                        id="reg-confirm-password"
+                                        name="confirm_password"
+                                        placeholder="Confirm password"
+                                        minlength="8"
+                                        autocomplete="new-password"
+                                        required
+                                    >
+
+                                    <button
+                                        type="button"
+                                        class="modal-password-toggle"
+                                        data-password-target="reg-confirm-password"
+                                        aria-label="Show password"
+                                    >
+                                        Show
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <p class="modal-password-hint">
+                            Use at least 8 characters for your password.
+                        </p>
+
+                        <button
+                            type="submit"
+                            class="modal-submit"
+                        >
+                            Create Resident Account
+                        </button>
+
+                    </form>
+
+                    <p class="modal-switch">
+                        Already have an account?
+                        <a
+                            href="#login-modal"
+                            id="switch-to-login"
+                        >
+                            Login here
+                        </a>
+                    </p>
+
+                    <div class="modal-security">
+                        🔒 Your account is intended for accessing
+                        resident services and tracking submitted reports.
+                    </div>
+
+                    <p class="modal-bottom-caption">
+                        Barangay Chrysanthemum Resident Registration
+                    </p>
+
+                </div>
+
+            </section>
+
+        </div>
+
     </div>
-</footer>
 
 
-<script src="script.js"></script>
-
-<div id="login-modal" class="modal" hidden>
-
-    <div class="modal-content">
-
-        <button type="button"
-                class="close-modal"
-                aria-label="Close login">
-            &times;
-        </button>
-
-        <h2 id="login-title">Resident Login</h2>
-        <p>Sign in to report incidents and track your requests.</p>
-
-        <form id="login-form" method="POST">
-
-            <div class="form-group">
-                <label for="modal-email">Email Address</label>
-                <input type="email"
-                       id="modal-email"
-                       name="email"
-                       required>
-            </div>
-
-            <div class="form-group">
-                <label for="modal-password">Password</label>
-                <input type="password"
-                       id="modal-password"
-                       name="password"
-                       required>
-            </div>
-
-            <button type="submit" class="modal-submit">
-                Login
-            </button>
-
-        </form>
-
-        <p class="modal-switch">
-            Don't have an account?
-            <a href="#register-modal" id="switch-to-register">
-                Register here
-            </a>
-        </p>
-
-    </div>
-
-</div>
+    <!-- FAQ CHATBOT -->
+    <div id="faq-chatbot-container"></div>
 
 
-<!-- REGISTRATION MODAL -->
-<div id="register-modal" class="modal" hidden>
+    <!-- JAVASCRIPT FILES -->
+    <script src="script.js"></script>
 
-    <div class="modal-content">
+    <script src="modal.js"></script>
 
-        <button type="button"
-                class="close-modal"
-                aria-label="Close registration">
-            &times;
-        </button>
+    <script src="announcements.js" defer></script>
 
-        <h2 id="register-title">Create Resident Account</h2>
-        <p>Register to report incidents and track your requests.</p>
+    <script>
+        fetch("faq_chatbot.php")
+            .then(function(response) {
 
-        <form id="register-form" method="POST">
+                if (!response.ok) {
+                    throw new Error("Chatbot unavailable");
+                }
 
-            <div class="form-group">
-                <label for="reg-first-name">First Name</label>
-                <input type="text" id="reg-first-name"
-                    name="first_name"
-                    maxlength="100"
-                    required>
-            </div>
+                return response.text();
 
-            <div class="form-group">
-                <label for="reg-last-name">Last Name</label>
-                <input type="text" id="reg-last-name"
-                    name="last_name"
-                    maxlength="100"
-                    required>
-            </div>
+            })
+            .then(function(html) {
 
-            <div class="form-group">
-                <label for="reg-email">Email Address</label>
-                <input type="email" id="reg-email"
-                    name="email"
-                    maxlength="255"
-                    required>
-            </div>
+                const container = document.getElementById(
+                    "faq-chatbot-container"
+                );
 
-            <div class="form-group">
-                <label for="reg-contact">Contact Number</label>
-                <input type="tel" id="reg-contact"
-                       name="contact_number"
-                       placeholder="09XXXXXXXXX"
-                       pattern="09[0-9]{9}"
-                       maxlength="11" required>
-            </div>
+                container.innerHTML = html;
 
-            <div class="form-group">
-                <label for="reg-address">Barangay Address</label>
-                <input type="text" id="reg-address"
-                    name="address"
-                    placeholder="House no., street, subdivision"
-                    maxlength="255"
-                    required>
-            </div>
+                // Scripts inserted with innerHTML do not execute.
+                const script = document.createElement("script");
 
-            <div class="form-group">
-                <label for="reg-password">Password</label>
-                <input type="password" id="reg-password"
-                       name="password" minlength="8" required>
-            </div>
+                script.src = "faq_chatbot.js";
 
-            <div class="form-group">
-                <label for="reg-confirm-password">Confirm Password</label>
-                <input type="password" id="reg-confirm-password"
-                       name="confirm_password"
-                       minlength="8" required>
-            </div>
+                document.body.appendChild(script);
 
-            <button type="submit" class="modal-submit">
-                Create Account
-            </button>
+            })
+            .catch(function(error) {
 
-        </form>
+                console.error("FAQ chatbot error:", error);
 
-        <p class="modal-switch">
-            Already have an account?
-            <a href="#login-modal" id="switch-to-login">
-                Login here
-            </a>
-        </p>
-
-    </div>
-
-</div>
-
-<script src="modal.js"></script>
-
-<script src="announcements.js" defer></script>
-
-<div id="faq-chatbot-container"></div>
-
-<script>
-fetch("faq_chatbot.php")
-    .then(function (response) {
-        if (!response.ok) {
-            throw new Error("Chatbot unavailable");
-        }
-        return response.text();
-    })
-    .then(function (html) {
-        const container = document.getElementById(
-            "faq-chatbot-container"
-        );
-
-        container.innerHTML = html;
-
-        // Scripts inserted using innerHTML do not execute.
-        const script = document.createElement("script");
-        script.src = "faq_chatbot.js";
-        document.body.appendChild(script);
-    })
-    .catch(function (error) {
-        console.error("FAQ chatbot error:", error);
-    });
-</script>
-
+            });
+    </script>
 
 </body>
 </html>

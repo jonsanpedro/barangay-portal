@@ -4,15 +4,12 @@ require_once __DIR__ . "/config/auth.php";
 
 header("Cache-Control: no-store");
 
-// Generate CSRF token for public contributions.
 if (empty($_SESSION["public_contribution_csrf_token"])) {
     $_SESSION["public_contribution_csrf_token"] =
         bin2hex(random_bytes(32));
 }
 
-// Escape output to prevent XSS.
-function escapeOutput($value): string
-{
+function escapeOutput($value): string {
     return htmlspecialchars(
         (string) ($value ?? ""),
         ENT_QUOTES,
@@ -20,7 +17,23 @@ function escapeOutput($value): string
     );
 }
 
-// Validate incident ID.
+function publicEvidencePath($path): ?string {
+    if (!is_string($path)) {
+        return null;
+    }
+
+    $path = str_replace("\\", "/", $path);
+
+    if (!preg_match(
+        '~^uploads/public_contributions/[a-zA-Z0-9_-]+\.(jpg|jpeg|png|webp)$~i',
+        $path
+    )) {
+        return null;
+    }
+
+    return $path;
+}
+
 $incidentId = filter_input(
     INPUT_GET,
     "id",
@@ -34,7 +47,7 @@ if (!$incidentId) {
 }
 
 try {
-    // Only approved incidents may be viewed publicly.
+    // Only approved incidents are public.
     $stmt = $pdo->prepare(
         "SELECT
             incident_id,
@@ -45,15 +58,12 @@ try {
             processing_status,
             created_at
          FROM incidents
-         WHERE incident_id = :incident_id
+         WHERE incident_id = ?
            AND map_approval_status = 'Approved'
          LIMIT 1"
     );
 
-    $stmt->execute([
-        "incident_id" => $incidentId
-    ]);
-
+    $stmt->execute([$incidentId]);
     $incident = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$incident) {
@@ -61,10 +71,49 @@ try {
         exit("Incident not found or not publicly available.");
     }
 
-} catch (PDOException $e) {
+    // Only Admin-approved contributions are displayed.
+    $contributionStmt = $pdo->prepare(
+        "SELECT
+            contribution_id,
+            comment_text,
+            evidence_path,
+            created_at
+         FROM incident_public_contributions
+         WHERE incident_id = ?
+           AND moderation_status = 'Approved'
+         ORDER BY created_at DESC, contribution_id DESC
+         LIMIT 100"
+    );
+
+    $contributionStmt->execute([$incidentId]);
+
+    $approvedContributions =
+        $contributionStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Determine whether the visitor is an active resident.
+    $isResident = false;
+
+    if (!empty($_SESSION["user_id"])) {
+        $roleStmt = $pdo->prepare(
+            "SELECT role
+             FROM users
+             WHERE user_id = ?
+               AND account_status = 'active'
+             LIMIT 1"
+        );
+
+        $roleStmt->execute([
+            (int) $_SESSION["user_id"]
+        ]);
+
+        $isResident =
+            $roleStmt->fetchColumn() === "resident";
+    }
+
+} catch (PDOException $exception) {
     error_log(
         "Public incident details error: " .
-        $e->getMessage()
+        $exception->getMessage()
     );
 
     http_response_code(500);
@@ -83,238 +132,304 @@ $statusClass = match ($status) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>
-        Incident Details | Barangay Chrysanthemum
-    </title>
+<title>
+    Incident Details | Barangay Chrysanthemum
+</title>
 
-    <style>
-        :root {
-            --primary-blue: #27358B;
-            --primary-blue-dark: #1C286D;
-            --accent-yellow: #F4B83F;
-            --background: #FAFAF7;
-            --text: #121B2C;
-        }
+<style>
+:root {
+    --primary-blue: #27358B;
+    --primary-blue-dark: #1C286D;
+    --accent-yellow: #F4B83F;
+    --background: #FAFAF7;
+    --text: #121B2C;
+}
 
-        * {
-            box-sizing: border-box;
-        }
+* {
+    box-sizing: border-box;
+}
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: var(--background);
-            color: var(--text);
-        }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--background);
+    color: var(--text);
+}
 
-        .page-header {
-            background: var(--primary-blue);
-            color: white;
-            padding: 24px 6%;
-        }
+.page-header {
+    background: var(--primary-blue);
+    color: white;
+    padding: 24px 6%;
+}
 
-        .page-header h1 {
-            margin: 0 0 6px;
-            font-size: 24px;
-        }
+.page-header h1 {
+    margin: 0 0 6px;
+    font-size: 24px;
+}
 
-        .page-header p {
-            margin: 0;
-            opacity: 0.9;
-        }
+.page-header p {
+    margin: 0;
+    opacity: 0.9;
+}
 
-        .page-container {
-            max-width: 900px;
-            margin: 35px auto;
-            padding: 0 20px;
-        }
+.page-container {
+    max-width: 900px;
+    margin: 35px auto;
+    padding: 0 20px;
+}
 
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: var(--primary-blue);
-            text-decoration: none;
-            font-weight: bold;
-        }
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: bold;
+}
 
-        .back-link:hover {
-            text-decoration: underline;
-        }
+.incident-card {
+    background: white;
+    border-radius: 14px;
+    padding: 30px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+}
 
-        .incident-card {
-            background: white;
-            border-radius: 14px;
-            padding: 30px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
-        }
+.incident-title {
+    margin: 0 0 15px;
+    color: var(--primary-blue);
+    overflow-wrap: anywhere;
+}
 
-        .incident-title {
-            margin: 0 0 15px;
-            color: var(--primary-blue);
-            overflow-wrap: anywhere;
-        }
+.status-badge {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
 
-        .status-badge {
-            display: inline-block;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-        }
+.pending {
+    background: #FEF3C7;
+    color: #92400E;
+}
 
-        .pending {
-            background: #FEF3C7;
-            color: #92400E;
-        }
+.in-progress {
+    background: #DBEAFE;
+    color: #1D4ED8;
+}
 
-        .in-progress {
-            background: #DBEAFE;
-            color: #1D4ED8;
-        }
+.resolved {
+    background: #DCFCE7;
+    color: #166534;
+}
 
-        .resolved {
-            background: #DCFCE7;
-            color: #166534;
-        }
+.unknown {
+    background: #E5E7EB;
+    color: #374151;
+}
 
-        .unknown {
-            background: #E5E7EB;
-            color: #374151;
-        }
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 25px;
+}
 
-        .details-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 25px;
-        }
+.detail-item {
+    min-width: 0;
+}
 
-        .detail-item {
-            min-width: 0;
-        }
+.detail-item strong {
+    display: block;
+    color: #64748B;
+    font-size: 13px;
+    margin-bottom: 7px;
+}
 
-        .detail-item strong {
-            display: block;
-            color: #64748B;
-            font-size: 13px;
-            margin-bottom: 7px;
-        }
+.detail-item span {
+    overflow-wrap: anywhere;
+}
 
-        .detail-item span {
-            overflow-wrap: anywhere;
-        }
+.section-divider {
+    border: none;
+    border-top: 1px solid #E5E7EB;
+    margin: 30px 0;
+}
 
-        .section-divider {
-            border: none;
-            border-top: 1px solid #E5E7EB;
-            margin: 30px 0;
-        }
+.section-title {
+    color: var(--primary-blue);
+    margin-bottom: 12px;
+}
 
-        .contribution-intro {
-            color: #475569;
-            line-height: 1.6;
-        }
+.contribution-intro {
+    color: #475569;
+    line-height: 1.6;
+}
 
-        .contribution-form {
-            margin-top: 24px;
-        }
+.contribution-form {
+    margin-top: 24px;
+}
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+.form-group {
+    margin-bottom: 20px;
+}
 
-        .form-group label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
 
-        .form-group textarea {
-            display: block;
-            width: 100%;
-            min-height: 130px;
-            padding: 12px;
-            border: 1px solid #CBD5E1;
-            border-radius: 8px;
-            font: inherit;
-            resize: vertical;
-        }
+.form-group textarea {
+    display: block;
+    width: 100%;
+    min-height: 130px;
+    padding: 12px;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    font: inherit;
+    resize: vertical;
+}
 
-        .form-group textarea:focus {
-            outline: 2px solid var(--primary-blue);
-            outline-offset: 1px;
-        }
+.form-group input[type="file"] {
+    display: block;
+    max-width: 100%;
+}
 
-        .form-group input[type="file"] {
-            display: block;
-            max-width: 100%;
-        }
+.form-hint {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #64748B;
+}
 
-        .form-hint {
-            margin-top: 8px;
-            font-size: 13px;
-            color: #64748B;
-        }
+.submit-btn {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 13px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+}
 
-        .submit-btn {
-            background: var(--primary-blue);
-            color: white;
-            border: none;
-            padding: 13px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-        }
+.submit-btn:hover {
+    background: var(--primary-blue-dark);
+}
 
-        .submit-btn:hover {
-            background: var(--primary-blue-dark);
-        }
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+.contribution-message {
+    margin-top: 16px;
+    font-weight: 500;
+}
 
-        .contribution-message {
-            margin-top: 16px;
-            font-weight: 500;
-        }
+.login-notice {
+    background: #EFF6FF;
+    border-left: 4px solid var(--primary-blue);
+    padding: 16px;
+    border-radius: 6px;
+    line-height: 1.6;
+}
 
-        .login-notice {
-            background: #EFF6FF;
-            border-left: 4px solid var(--primary-blue);
-            padding: 16px;
-            border-radius: 6px;
-            line-height: 1.6;
-        }
+.moderation-notice {
+    margin-top: 15px;
+    padding: 14px;
+    background: #FFFBEB;
+    border-left: 4px solid var(--accent-yellow);
+    border-radius: 6px;
+    color: #92400E;
+    font-size: 14px;
+    line-height: 1.6;
+}
 
-        @media (max-width: 600px) {
-            .incident-card {
-                padding: 20px;
-            }
+.approved-list {
+    display: grid;
+    gap: 16px;
+    margin-top: 20px;
+}
 
-            .details-grid {
-                grid-template-columns: 1fr;
-            }
+.approved-comment {
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 20px;
+    background: #F8FAFC;
+}
 
-            .page-header h1 {
-                font-size: 20px;
-            }
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
 
-            .submit-btn {
-                width: 100%;
-            }
-        }
-    </style>
+.comment-author {
+    font-weight: bold;
+    color: var(--primary-blue);
+}
+
+.comment-date {
+    color: #64748B;
+    font-size: 13px;
+}
+
+.comment-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.7;
+    margin: 0 0 14px;
+}
+
+.comment-photo {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    max-height: 350px;
+    object-fit: contain;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    background: white;
+}
+
+.empty-contributions {
+    padding: 24px;
+    background: #F8FAFC;
+    border: 1px dashed #CBD5E1;
+    border-radius: 10px;
+    color: #64748B;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .incident-card {
+        padding: 20px;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header h1 {
+        font-size: 20px;
+    }
+
+    .submit-btn {
+        width: 100%;
+    }
+}
+</style>
 </head>
 
 <body>
@@ -339,6 +454,8 @@ $statusClass = match ($status) {
         <span class="status-badge <?= $statusClass ?>">
             <?= escapeOutput($status) ?>
         </span>
+
+        <!-- INCIDENT INFORMATION -->
 
         <div class="details-grid">
 
@@ -382,39 +499,100 @@ $statusClass = match ($status) {
 
         <hr class="section-divider">
 
+        <!-- APPROVED COMMUNITY COMMENTS -->
+
+        <section id="approved-contributions">
+
+            <h3 class="section-title">
+                Approved Community Contributions
+                (<?= count($approvedContributions) ?>)
+            </h3>
+
+            <p class="contribution-intro">
+                These observations and supporting photos
+                have been reviewed and approved by the
+                Barangay Administrator.
+            </p>
+
+            <?php if (empty($approvedContributions)): ?>
+
+                <div class="empty-contributions">
+                    No approved community contributions yet.
+                </div>
+
+            <?php else: ?>
+
+                <div class="approved-list">
+
+                    <?php foreach ($approvedContributions as $item): ?>
+
+                        <article class="approved-comment">
+
+                            <div class="comment-header">
+
+                                <span class="comment-author">
+                                    Community Resident
+                                </span>
+
+                                <time class="comment-date">
+                                    <?= escapeOutput(
+                                        $item["created_at"]
+                                    ) ?>
+                                </time>
+
+                            </div>
+
+                            <p class="comment-text"><?= escapeOutput(
+                                $item["comment_text"]
+                            ) ?></p>
+
+                            <?php
+                                $photo = publicEvidencePath(
+                                    $item["evidence_path"]
+                                );
+                            ?>
+
+                            <?php if ($photo !== null): ?>
+
+                                <img
+                                    src="public_contribution_evidence.php?id=<?= (int) $item['contribution_id'] ?>"
+                                    alt="Approved community supporting evidence"
+                                    class="comment-photo"
+                                    loading="lazy"
+                                >
+
+                            <?php endif; ?>
+
+                        </article>
+
+                    <?php endforeach; ?>
+
+                </div>
+
+            <?php endif; ?>
+
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- COMMUNITY CONTRIBUTION FORM -->
+
         <section id="community-contributions">
 
-            <h3>Community Contributions</h3>
+            <h3 class="section-title">
+                Share a Community Contribution
+            </h3>
 
             <p class="contribution-intro">
                 Share additional observations or supporting
-                photos about this community incident.
-                Contributions should be relevant to the
-                reported concern.
+                photos about this incident. Contributions
+                must be relevant to the reported concern.
             </p>
 
-            <?php
-            // The page remains public, but only residents
-            // may submit contributions.
-            $isResident = false;
-
-            if (!empty($_SESSION["user_id"])) {
-                $roleStmt = $pdo->prepare(
-                    "SELECT role
-                     FROM users
-                     WHERE user_id = ?
-                       AND account_status = 'active'
-                     LIMIT 1"
-                );
-
-                $roleStmt->execute([
-                    (int) $_SESSION["user_id"]
-                ]);
-
-                $isResident =
-                    $roleStmt->fetchColumn() === "resident";
-            }
-            ?>
+            <div class="moderation-notice">
+                All contributions are subject to Admin
+                approval before appearing publicly.
+            </div>
 
             <?php if ($isResident): ?>
 
@@ -427,7 +605,7 @@ $statusClass = match ($status) {
                     <input
                         type="hidden"
                         name="incident_id"
-                        value="<?= (int) $incident["incident_id"] ?>"
+                        value="<?= (int) $incidentId ?>"
                     >
 
                     <input
@@ -439,6 +617,7 @@ $statusClass = match ($status) {
                     >
 
                     <div class="form-group">
+
                         <label for="comment_text">
                             Your Comment
                         </label>
@@ -450,9 +629,11 @@ $statusClass = match ($status) {
                             required
                             placeholder="Share additional information..."
                         ></textarea>
+
                     </div>
 
                     <div class="form-group">
+
                         <label for="evidence">
                             Supporting Photo (Optional)
                         </label>
@@ -465,8 +646,10 @@ $statusClass = match ($status) {
                         >
 
                         <p class="form-hint">
-                            JPG, PNG, or WebP. Maximum 3 MB.
+                            JPG, PNG, or WebP.
+                            Maximum file size: 3 MB.
                         </p>
+
                     </div>
 
                     <button
@@ -531,7 +714,6 @@ contributionForm.addEventListener(
         message.textContent = "";
         message.style.color = "";
 
-        // Client-side file size validation.
         if (
             photoInput.files.length > 0 &&
             photoInput.files[0].size > 3 * 1024 * 1024
@@ -545,7 +727,9 @@ contributionForm.addEventListener(
 
         button.disabled = true;
         button.textContent = "Submitting...";
-        message.textContent = "Submitting contribution...";
+
+        message.textContent =
+            "Submitting contribution...";
 
         try {
             const response = await fetch(
@@ -563,13 +747,7 @@ contributionForm.addEventListener(
             if (!contentType.includes("application/json")) {
                 if (response.status === 401) {
                     throw new Error(
-                        "Please log in again as a resident."
-                    );
-                }
-
-                if (response.status === 403) {
-                    throw new Error(
-                        "Access denied or security token invalid."
+                        "Session expired. Please log in again."
                     );
                 }
 
@@ -588,17 +766,15 @@ contributionForm.addEventListener(
             }
 
             message.textContent =
-                "Contribution submitted successfully!";
+                "Contribution submitted for Admin review. " +
+                "It will appear publicly after approval.";
 
             message.style.color = "#166534";
 
             contributionForm.reset();
 
         } catch (error) {
-            console.error(
-                "Contribution submission error:",
-                error
-            );
+            console.error(error);
 
             message.textContent =
                 error.message ||

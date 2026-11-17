@@ -398,3 +398,29 @@ residentFeatureCards.forEach(function(card) {
     });
 
 });
+
+/* SHOW / HIDE PASSWORD */
+
+document.querySelectorAll(
+    ".modal-password-toggle"
+).forEach(function(button) {
+
+    button.addEventListener("click", function() {
+
+        const targetId = button.dataset.passwordTarget;
+        const passwordInput = document.getElementById(targetId);
+
+        if (!passwordInput) return;
+
+        const isHidden = passwordInput.type === "password";
+
+        passwordInput.type = isHidden ? "text" : "password";
+
+        button.textContent = isHidden ? "Hide" : "Show";
+
+        button.setAttribute(
+            "aria-label",
+            isHidden ? "Hide password" : "Show password"
+        );
+    });
+});
