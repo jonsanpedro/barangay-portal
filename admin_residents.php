@@ -1,9 +1,13 @@
 
 <?php
+
 require_once __DIR__ . "/config/auth.php";
 
 $admin = requireRole("admin");
 
+// =====================================
+// HTML ESCAPING
+// =====================================
 function e($value): string {
     return htmlspecialchars(
         (string) ($value ?? ""),
@@ -12,7 +16,42 @@ function e($value): string {
     );
 }
 
-// Generate CSRF token.
+// =====================================
+// EMAIL MASKING
+// =====================================
+function maskEmail($email): string {
+
+    $email = trim((string) ($email ?? ""));
+
+    if ($email === "") {
+        return "—";
+    }
+
+    $parts = explode("@", $email);
+
+    if (
+        count($parts) !== 2 ||
+        $parts[0] === "" ||
+        $parts[1] === ""
+    ) {
+        return "********";
+    }
+
+    $username = $parts[0];
+    $domain = $parts[1];
+
+    return substr($username, 0, 1)
+        . str_repeat(
+            "*",
+            max(0, strlen($username) - 1)
+        )
+        . "@"
+        . $domain;
+}
+
+// =====================================
+// GENERATE CSRF TOKEN
+// =====================================
 if (empty($_SESSION["residents_csrf"])) {
     $_SESSION["residents_csrf"] = bin2hex(random_bytes(32));
 }
@@ -534,10 +573,12 @@ try {
                                     <?= e($resident["username"] ?: "—") ?>
                                 </td>
 
+                                <!-- MASKED EMAIL -->
                                 <td>
-                                    <?= e($resident["email"] ?: "—") ?>
+                                    <?= e(maskEmail($resident["email"])) ?>
                                 </td>
 
+                                <!-- MASKED CONTACT NUMBER -->
                                 <td>
                                     <?php
                                     $phone = (string) (
