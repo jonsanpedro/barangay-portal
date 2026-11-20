@@ -10,10 +10,11 @@ if (!$isLocal) {
 }
 
 $host = "127.0.0.1";
-$port = "3307";
-$dbname = "barangay_portal_db";
-$username = "root";
-$password = "";
+$port = "3309";
+$dbname = "barangay_portal_restore_test";
+$username = "barangay_app";
+$password = require __DIR__ . '/database.local.php';
+$password = $password['password'];
 
 try {
     $pdo = new PDO(
