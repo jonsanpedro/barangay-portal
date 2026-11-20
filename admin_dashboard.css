@@ -1939,3 +1939,25 @@ textarea {
         padding: 18px;
     }
 }
+
+
+
+
+/* Keep the toggle inside the admin topbar */
+.admin-topbar #admin-sidebar-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border: 1px solid #E2E8F0;
+    border-radius: 9px;
+    background: #FFFFFF;
+    color: #27358B;
+    cursor: pointer;
+}
+
+.admin-topbar #admin-sidebar-toggle:hover {
+    background: #F1F4FF;
+}

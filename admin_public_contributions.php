@@ -367,6 +367,7 @@ try {
     </title>
 
     <link rel="stylesheet" href="admin_dashboard.css">
+    
 
     <style>
         * {
@@ -532,12 +533,14 @@ try {
 <div class="admin-layout">
 
     <!-- SHARED ADMIN SIDEBAR -->
-    <?php require __DIR__ . "/includes/admin_sidebar.php"; ?>
+<?php require __DIR__ . "/includes/admin_sidebar.php"; ?>
 
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
 
-        <div class="moderation-wrap">
+<!-- MAIN CONTENT -->
+<main class="main-content">
+
+
+<div class="moderation-wrap">
 
             <header class="dashboard-header">
 

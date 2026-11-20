@@ -1,0 +1,310 @@
+
+/* ==========================================
+   BARANGAY CHRYSANTHEMUM
+   COLLAPSIBLE ADMIN SIDEBAR
+========================================== */
+
+:root {
+    --admin-sidebar-width: 270px;
+    --admin-sidebar-collapsed-width: 78px;
+    --admin-sidebar-mobile-width: 270px;
+}
+
+/* ==========================================
+   MAIN LAYOUT
+========================================== */
+
+.admin-layout {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    align-items: stretch;
+}
+
+.admin-layout > .sidebar {
+    width: var(--admin-sidebar-width);
+    flex: 0 0 var(--admin-sidebar-width);
+    min-width: 0;
+    min-height: 100vh;
+    transition:
+        width 0.25s ease,
+        flex-basis 0.25s ease;
+}
+
+.admin-layout > .main-content {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+}
+
+/* ==========================================
+   DESKTOP COLLAPSED SIDEBAR
+========================================== */
+
+@media (min-width: 769px) {
+
+    body.admin-sidebar-collapsed
+    .admin-layout > .sidebar {
+        width: var(--admin-sidebar-collapsed-width);
+        flex: 0 0 var(--admin-sidebar-collapsed-width);
+        padding-left: 10px;
+        padding-right: 10px;
+        overflow: hidden;
+    }
+
+    body.admin-sidebar-collapsed
+    .sidebar-brand-identity {
+        justify-content: center;
+    }
+
+    body.admin-sidebar-collapsed
+    .sidebar-brand-identity .sidebar-logo {
+        width: 48px;
+        height: 48px;
+        flex: 0 0 48px;
+    }
+
+    body.admin-sidebar-collapsed
+    .sidebar-brand-text,
+    body.admin-sidebar-collapsed
+    .sidebar-nav-heading,
+    body.admin-sidebar-collapsed
+    .sidebar-link-label,
+    body.admin-sidebar-collapsed
+    .sidebar-admin-details,
+    body.admin-sidebar-collapsed
+    .sidebar-logout-modern span {
+        display: none;
+    }
+
+    body.admin-sidebar-collapsed
+    .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    body.admin-sidebar-collapsed
+    .sidebar-nav .sidebar-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 12px;
+    }
+
+    body.admin-sidebar-collapsed
+    .sidebar-icon {
+        width: 21px;
+        height: 21px;
+        flex-shrink: 0;
+    }
+
+    body.admin-sidebar-collapsed
+    .sidebar-admin-info {
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    body.admin-sidebar-collapsed
+    .sidebar-footer .sidebar-logout-modern {
+        justify-content: center;
+        padding: 13px;
+    }
+}
+
+/* ==========================================
+   HAMBURGER TOGGLE BUTTON
+========================================== */
+
+.admin-sidebar-toggle {
+    display: inline-flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 42px;
+
+    width: 42px;
+    height: 42px;
+    padding: 9px;
+
+    margin: 0;
+
+    border: 1px solid #DCE3ED;
+    border-radius: 10px;
+
+    background: #FFFFFF;
+    color: #27358B;
+
+    cursor: pointer;
+    z-index: 5;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.admin-sidebar-toggle:hover {
+    background: #EEF2FF;
+    border-color: #27358B;
+}
+
+.admin-sidebar-toggle:focus-visible {
+    outline: 3px solid #F4B83F;
+    outline-offset: 2px;
+}
+
+.admin-sidebar-toggle svg {
+    display: block;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+}
+
+/* ==========================================
+   ADMIN TOPBAR
+========================================== */
+
+.admin-layout .admin-topbar {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+
+    width: 100%;
+    min-height: 42px;
+
+    margin: 0 0 22px;
+    padding: 0;
+
+    background: transparent;
+}
+
+.admin-topbar-title {
+    color: #27358B;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* Keep the toggle in the topbar,
+   never in the narrow sidebar gap. */
+
+.admin-layout .admin-topbar
+.admin-sidebar-toggle {
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+
+    transform: none;
+    margin: 0;
+}
+
+/* ==========================================
+   MOBILE OVERLAY
+========================================== */
+
+#admin-sidebar-overlay {
+    display: none;
+}
+
+/* ==========================================
+   MOBILE SIDEBAR
+========================================== */
+
+@media (max-width: 768px) {
+
+    .admin-layout {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .admin-layout > .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+
+        z-index: 1100;
+
+        width: var(--admin-sidebar-mobile-width);
+        max-width: 85vw;
+        height: 100dvh;
+        min-height: 0;
+        flex: none;
+
+        overflow-y: auto;
+
+        transform: translateX(-100%);
+
+        transition: transform 0.25s ease;
+    }
+
+    body.admin-sidebar-mobile-open
+    .admin-layout > .sidebar {
+        transform: translateX(0);
+    }
+
+    .admin-layout > .main-content {
+        width: 100%;
+        min-width: 0;
+        flex: 1 1 auto;
+        padding: 20px;
+    }
+
+    #admin-sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1090;
+        background: rgba(12, 20, 48, 0.55);
+    }
+
+    body.admin-sidebar-mobile-open
+    #admin-sidebar-overlay {
+        display: block;
+    }
+
+    .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .sidebar-nav-heading {
+        display: block;
+    }
+
+    .sidebar-nav .sidebar-link {
+        justify-content: flex-start;
+        padding: 13px 14px;
+    }
+
+    .sidebar-link-label,
+    .sidebar-brand-text,
+    .sidebar-admin-details {
+        display: block;
+    }
+
+    .admin-layout .admin-topbar {
+        margin-bottom: 18px;
+    }
+}
+
+/* ==========================================
+   REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .admin-layout > .sidebar,
+    .admin-layout > .main-content,
+    .admin-sidebar-toggle {
+        transition: none;
+    }
+}

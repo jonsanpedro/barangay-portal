@@ -234,6 +234,7 @@ try {
 
     <link rel="stylesheet" href="admin_dashboard.css">
 
+
     <style>
         .incidents-toolbar {
             display: flex;
@@ -484,6 +485,8 @@ try {
 
     <!-- SHARED ADMIN SIDEBAR -->
     <?php require __DIR__ . "/includes/admin_sidebar.php"; ?>
+
+
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
@@ -855,6 +858,7 @@ if (logoutForm) {
     });
 }
 </script>
+
 
 </body>
 </html>

@@ -149,6 +149,7 @@ $barangayLogo = "images/barangay_logo_updated.png";
     <title>Admin Dashboard | Barangay Chrysanthemum</title>
 
     <link rel="stylesheet" href="admin_dashboard.css">
+    <link rel="stylesheet" href="admin_sidebar.css">
 
     <style>
 
@@ -643,8 +644,15 @@ $barangayLogo = "images/barangay_logo_updated.png";
 
     <!-- Shared Admin Sidebar -->
     <?php require __DIR__ . "/includes/admin_sidebar.php"; ?>
+    <div id="admin-sidebar-overlay"></div>
 
     <main class="main-content dashboard-home">
+
+<div class="admin-topbar">
+    <span class="admin-topbar-title">
+        Admin Portal
+    </span>
+</div>
 
         <!-- DASHBOARD HEADER -->
         <header class="dashboard-header">

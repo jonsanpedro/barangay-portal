@@ -21,9 +21,13 @@
     <!-- HEADER -->
     <header>
         <div class="brand">
-            <span class="brand-mark" aria-hidden="true">
-                <i class="bi bi-buildings"></i>
-            </span>
+            <span class="brand-mark">
+                <img
+                    src="images/barangay_logo_updated.png"
+                    alt="Barangay Chrysanthemum Logo"
+                    class="brand-logo"
+            >
+        </span>
 
             <div class="brand-copy">
                 <h1>Barangay Chrysanthemum</h1>
@@ -48,7 +52,13 @@
                 Login
             </a>
 
-            <span id="account-name" hidden></span>
+            <a
+                href="resident_dashboard.php"
+                id="account-name"
+                class="resident-dashboard-link"
+                title="Go to Resident Dashboard"
+                hidden
+            ></a>
 
             <button type="button" id="logout-button" hidden>
                 Logout
@@ -267,23 +277,65 @@
         <!-- ANNOUNCEMENTS -->
         <section class="announcements" id="announcements">
 
-            <span class="section-kicker">COMMUNITY UPDATES</span>
+    <div class="announcements-heading">
 
-            <h2>Latest Barangay Announcements</h2>
+        <span class="section-kicker">
+            <i class="bi bi-broadcast"></i>
+            COMMUNITY UPDATES
+        </span>
 
+        <h2>Latest Barangay Announcements</h2>
+
+        <p>
+            Stay connected with your community.
+            Discover important news, upcoming events,
+            and official barangay updates.
+        </p>
+
+    </div>
+
+    <div class="announcements-intro">
+
+        <div class="announcements-intro-icon">
+            <i class="bi bi-megaphone-fill"></i>
+        </div>
+
+        <div class="announcements-intro-text">
+            <h3>Stay Informed, Stay Connected</h3>
             <p>
-                Stay informed about community news
-                and important updates.
+                Important information and community
+                announcements from Barangay Chrysanthemum.
             </p>
+        </div>
 
-            <div
-                class="announcements-container"
-                id="announcements-container"
-            >
-                <p>Loading announcements...</p>
-            </div>
+        <span class="announcements-live">
+            <span class="live-dot"></span>
+            Community Bulletin
+        </span>
 
-        </section>
+    </div>
+
+    <!-- Dynamic announcements from announcements.js -->
+    <div
+        class="announcements-container"
+        id="announcements-container"
+        aria-live="polite"
+    >
+        <p>Loading announcements...</p>
+    </div>
+
+    <div class="announcements-footer">
+
+        <i class="bi bi-info-circle"></i>
+
+        <p>
+            Announcements are published and updated
+            by authorized barangay personnel.
+        </p>
+
+    </div>
+
+</section>
 
     </main>
 
@@ -294,14 +346,19 @@
         <div class="footer-container">
 
             <div class="footer-brand">
-                <h3>
-                    <i class="bi bi-buildings" aria-hidden="true"></i>
-                    Barangay Chrysanthemum
-                </h3>
+                <div class="footer-brand-heading">
+                    <img
+                        src="images/barangay_logo_updated.png"
+                        alt="Barangay Chrysanthemum Official Logo"
+                        class="footer-logo"
+                        width="64"
+                        height="64"
+                    >
 
-                <p>
-                    Incident and Public Service Request Portal
-                </p>
+                    <h3>Barangay Chrysanthemum</h3>
+                </div>
+
+                <p>Incident and Public Service Request Portal</p>
             </div>
 
             <div class="footer-links">
